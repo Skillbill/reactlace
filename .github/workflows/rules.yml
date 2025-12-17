@@ -1,0 +1,22 @@
+name: Rules
+on: pull_request
+
+jobs:
+  check-linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+      - name: Clean install
+        run: npm ci
+      - name: Run lint
+        run: npm run lint
+  check-type:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+      - name: Clean install
+        run: npm ci
+      - name: Run type check
+        run: npm run type-check
