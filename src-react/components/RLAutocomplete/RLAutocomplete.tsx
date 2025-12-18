@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useCallback, useState, useEffect, useRef } from 'react'
+import { forwardRef, useImperativeHandle, useState, useEffect, useRef } from 'react'
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primereact/autocomplete'
 import type { RLAutocompleteProps, RLAutocompleteRef } from './types'
 import type { RLSelectOptionType } from '../RLSelect'
@@ -30,15 +30,12 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
       onDropdownClick,
       onComplete,
       onClear,
-      onBeforeShow,
-      onBeforeHide,
       onShow,
       onHide
     },
     ref
   ) => {
     const autocompleteRef = useRef<AutoComplete>(null)
-    const [suggestions, setSuggestions] = useState<RLSelectOptionType[]>([])
     const [inputModel, setInputModel] = useState<RLSelectOptionType | string | null>(null)
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
 
@@ -63,95 +60,59 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
       validate: () => validate(value)
     }))
 
-    const handleChange = useCallback(
-      (evt: { value: RLSelectOptionType | string | null }) => {
-        setInputModel(evt.value)
+    const handleChange = (evt: { value: RLSelectOptionType | string | null }) => {
+      console.log('handleChange evt.value:', evt.value)
 
-        if (!forceSelection) {
-          if (evt.value && typeof evt.value === 'object') {
-            onChange?.(evt.value.value)
-          } else if (typeof evt.value === 'string') {
-            onChange?.(evt.value)
-          }
-        }
+      setInputModel(evt.value)
 
-        onSlChange?.(evt as Parameters<NonNullable<typeof onSlChange>>[0])
-      },
-      [forceSelection, onChange, onSlChange]
-    )
-
-    const handleItemSelect = useCallback(
-      (evt: { value: RLSelectOptionType }) => {
-        onChange?.(evt.value.value)
-        setSuggestions([])
-        onItemSelect?.(evt)
-      },
-      [onChange, onItemSelect]
-    )
-
-    const handleClick = useCallback(
-      (evt: React.MouseEvent) => {
-        setSuggestions(options)
-        autocompleteRef.current?.show()
-        onClick?.(evt.nativeEvent)
-      },
-      [options, onClick]
-    )
-
-    const handleFocus = useCallback(
-      (evt: React.FocusEvent) => {
-        setSuggestions(options)
-        autocompleteRef.current?.show()
-        onFocus?.(evt.nativeEvent)
-      },
-      [options, onFocus]
-    )
-
-    const handleBlur = useCallback(
-      (evt: React.FocusEvent) => {
-        if (inputModel === null && value) {
-          setInputModel(options.find((option) => option.value === value) ?? null)
-        }
-        onBlur?.(evt.nativeEvent)
-      },
-      [inputModel, value, options, onBlur]
-    )
-
-    const defaultOnComplete = useCallback(
-      (evt: AutoCompleteCompleteEvent) => {
-        setSuggestions(
-          options.filter((item) => item.text.toLowerCase().includes(evt.query.toLowerCase()))
-        )
-      },
-      [options]
-    )
-
-    const handleComplete = useCallback(
-      (evt: AutoCompleteCompleteEvent) => {
-        if (onComplete) {
-          onComplete(evt)
+      if (!forceSelection) {
+        if (evt.value && typeof evt.value === 'object') {
+          onChange?.(evt.value.value)
+        } else if (typeof evt.value === 'string') {
+          onChange?.(evt.value)
         } else {
-          defaultOnComplete(evt)
+          onChange?.('')
         }
-      },
-      [onComplete, defaultOnComplete]
-    )
+      }
 
-    const optionTemplate = useCallback(
-      (option: RLSelectOptionType) => (
-        <div className="flex items-center gap-2 min-h-[1lh]">
-          <span className="w-4">
-            {value === option.value && <RLIcon className="pt-1" name="check" />}
-          </span>
-          <span>{option.text}</span>
-        </div>
-      ),
-      [value]
-    )
+      onSlChange?.(evt as Parameters<NonNullable<typeof onSlChange>>[0])
+    }
 
-    const dropdownIconTemplate = useCallback(
-      () => <RLIcon className="dropdown" name="caret" library="system" />,
-      []
+    const handleItemSelect = (evt: { value: RLSelectOptionType }) => {
+      console.log('handleItemSelect evt.value:', evt.value)
+
+      setInputModel(evt.value)
+      onChange?.(evt.value.value)
+      onItemSelect?.(evt)
+    }
+
+    const handleClick = (evt: React.MouseEvent) => {
+      autocompleteRef.current?.show()
+      onClick?.(evt.nativeEvent)
+    }
+
+    const handleFocus = (evt: React.FocusEvent) => {
+      autocompleteRef.current?.show()
+      onFocus?.(evt.nativeEvent)
+    }
+
+    const handleBlur = (evt: React.FocusEvent) => {
+      onBlur?.(evt.nativeEvent)
+    }
+
+    const handleComplete = (evt: AutoCompleteCompleteEvent) => {
+      if (onComplete) {
+        onComplete(evt)
+      }
+    }
+
+    const optionTemplate = (option: RLSelectOptionType) => (
+      <div className="flex items-center gap-2 min-h-[1lh]">
+        <span className="w-4">
+          {value === option.value && <RLIcon className="pt-1" name="check" />}
+        </span>
+        <span>{option.text}</span>
+      </div>
     )
 
     return (
@@ -167,7 +128,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
           className={errorMessage ? 'error' : ''}
           value={inputModel}
           field="text"
-          suggestions={suggestions}
+          suggestions={options}
           emptyMessage={emptySearchMessage}
           placeholder={placeholder}
           disabled={disabled}
@@ -187,7 +148,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
           onShow={onShow}
           onHide={onHide}
           itemTemplate={optionTemplate}
-          dropdownIcon={dropdownIconTemplate}
+          dropdownIcon={() => <RLIcon className="dropdown" name="caret" library="system" />}
         />
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>
