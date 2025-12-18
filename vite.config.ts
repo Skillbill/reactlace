@@ -1,38 +1,36 @@
 import { fileURLToPath, URL } from 'node:url'
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-
+import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          isCustomElement: (tag) => tag.startsWith('sl-')
-        }
-      }
-    }),
-    dts()
+    react(),
+    dts({
+      include: ['src-react/**/*'],
+      outDir: 'dist-react'
+    })
   ],
   build: {
+    outDir: 'dist-react',
     lib: {
       entry: [
-        resolve(__dirname, 'src/index.ts'),
-        resolve(__dirname, 'node_modules/primevue/resources/themes/saga-blue/theme.css')
+        resolve(__dirname, 'src-react/index.ts'),
+        resolve(__dirname, 'node_modules/primereact/resources/themes/saga-blue/theme.css')
       ],
-      name: 'Vuelace',
-      fileName: 'vuelace'
+      name: 'Reactlace',
+      fileName: 'reactlace'
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['react', 'react-dom'],
       output: {
         assetFileNames: (assetInfo) =>
-          assetInfo.name.endsWith('.css') ? 'styles/[name][extname]' : 'assets/[name][extname]',
+          assetInfo.name?.endsWith('.css') ? 'styles/[name][extname]' : 'assets/[name][extname]',
         globals: {
-          vue: 'Vue'
+          react: 'React',
+          'react-dom': 'ReactDOM'
         }
       }
     },
@@ -40,7 +38,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src-react', import.meta.url))
     }
   }
 })

@@ -1,97 +1,88 @@
 {
-  "name": "@skillbill/vuelace-3",
-  "version": "1.2.12",
+  "name": "@skillbill/reactlace",
+  "version": "1.0.0",
   "private": false,
   "author": "skillbill",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Skillbill/vuelace-3.git"
+    "url": "git+https://github.com/Skillbill/reactlace.git"
   },
   "bugs": {
-    "url": "https://github.com/Skillbill/vuelace-3/issues"
+    "url": "https://github.com/Skillbill/reactlace/issues"
   },
-  "homepage": "https://skillbill.github.io/vuelace-3/",
+  "homepage": "https://skillbill.github.io/reactlace/",
   "files": [
-    "dist/**"
+    "dist-react/**"
   ],
   "keywords": [
     "components",
     "shoelace",
     "ui library",
-    "vue library"
+    "react library",
+    "primereact"
   ],
   "type": "module",
-  "types": "./dist/index.d.ts",
-  "main": "./dist/vuelace.umd.cjs",
-  "module": "./dist/vuelace.js",
+  "types": "./dist-react/index.d.ts",
+  "main": "./dist-react/reactlace.umd.cjs",
+  "module": "./dist-react/reactlace.js",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/vuelace.js"
+        "types": "./dist-react/index.d.ts",
+        "default": "./dist-react/reactlace.js"
       },
-      "require": "./dist/vuelace.umd.cjs"
+      "require": "./dist-react/reactlace.umd.cjs"
     },
-    "./styles/vuelace.css": {
-      "import": "./dist/styles/index.css",
-      "require": "./dist/styles/index.css"
+    "./styles/reactlace.css": {
+      "import": "./dist-react/styles/index.css",
+      "require": "./dist-react/styles/index.css"
     },
-    "./styles/theme_primevue.css": {
-      "import": "./dist/styles/theme.css",
-      "require": "./dist/styles/theme.css"
+    "./styles/theme_primereact.css": {
+      "import": "./dist-react/styles/theme.css",
+      "require": "./dist-react/styles/theme.css"
     }
   },
   "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --project .",
-    "lint": "eslint ./src --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore ",
-    "format": "prettier --write src/",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o docs",
-    "build-publish": "vite build && npm publish --access public"
-  },
-  "devDependencies": {
-    "@chromatic-com/storybook": "^1.4.0",
-    "@rushstack/eslint-patch": "^1.3.3",
-    "@storybook/addon-essentials": "^8.1.1",
-    "@storybook/addon-interactions": "^8.1.1",
-    "@storybook/addon-links": "^8.1.1",
-    "@storybook/blocks": "^8.1.1",
-    "@storybook/test": "^8.1.1",
-    "@storybook/vue3": "^8.1.1",
-    "@storybook/vue3-vite": "^8.1.1",
-    "@tsconfig/node18": "^18.2.2",
-    "@types/jsdom": "^21.1.6",
-    "@types/node": "^18.19.3",
-    "@vitejs/plugin-vue": "^4.5.2",
-    "@vue/eslint-config-prettier": "^8.0.0",
-    "@vue/eslint-config-typescript": "^12.0.0",
-    "@vue/tsconfig": "^0.5.1",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.49.0",
-    "eslint-plugin-storybook": "^0.8.0",
-    "eslint-plugin-vue": "^9.17.0",
-    "jsdom": "^23.0.1",
-    "npm-run-all2": "^6.1.1",
-    "postcss": "^8.4.33",
-    "prettier": "^3.0.3",
-    "rollup-plugin-typescript2": "^0.36.0",
-    "storybook": "^8.1.1",
-    "tailwindcss": "^3.4.1",
-    "typescript": "~5.3.0",
-    "vite": "^5.0.10",
-    "vite-plugin-dts": "^3.7.1",
-    "vue-tsc": "^1.8.25"
+    "dev": "vite --config vite.config.react.ts",
+    "build": "tsc --project tsconfig.react.json --noEmit && vite build --config vite.config.react.ts",
+    "preview": "vite preview --config vite.config.react.ts",
+    "type-check": "tsc --project tsconfig.react.json --noEmit",
+    "lint": "eslint ./src-react --ext .tsx,.ts --fix",
+    "storybook": "storybook dev -p 6007 -c .storybook-react",
+    "build-storybook": "storybook build -c .storybook-react -o docs-react",
+    "build-publish": "vite build --config vite.config.react.ts && npm publish --access public"
   },
   "peerDependencies": {
     "@mdi/svg": "^7.4.47",
     "@shoelace-style/shoelace": "^2.17.1",
-    "pinia": "^2.1.7",
-    "primevue": "^3.52.0",
-    "vue": "^3.4.25"
+    "primereact": "^10.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^1.4.0",
+    "@storybook/addon-essentials": "^8.1.1",
+    "@storybook/addon-interactions": "^8.1.1",
+    "@storybook/addon-links": "^8.1.1",
+    "@storybook/blocks": "^8.1.1",
+    "@storybook/react": "^8.1.1",
+    "@storybook/react-vite": "^8.1.1",
+    "@storybook/test": "^8.1.1",
+    "@types/node": "^18.19.3",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.49.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-storybook": "^0.8.0",
+    "postcss": "^8.4.33",
+    "storybook": "^8.1.1",
+    "tailwindcss": "^3.4.1",
+    "typescript": "~5.3.0",
+    "vite": "^5.0.10",
+    "vite-plugin-dts": "^3.7.1"
   }
 }
