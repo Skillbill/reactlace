@@ -17,13 +17,13 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src-react/*"]
+      "@/*": ["src/*"]
     }
   },
-  "include": ["src-react/**/*.ts", "src-react/**/*.tsx", "src-react/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
   "exclude": [
-    "src-react/stories/**/*",
-    "src-react/**/*.stories.ts",
-    "src-react/**/*.stories.tsx"
+    "src/stories/**/*",
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx"
   ]
 }

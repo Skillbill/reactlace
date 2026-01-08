@@ -13,7 +13,7 @@
   },
   "homepage": "https://skillbill.github.io/reactlace/",
   "files": [
-    "dist-react/**"
+    "dist/**"
   ],
   "keywords": [
     "components",
@@ -23,52 +23,49 @@
     "primereact"
   ],
   "type": "module",
-  "types": "./dist-react/index.d.ts",
-  "main": "./dist-react/reactlace.umd.cjs",
-  "module": "./dist-react/reactlace.js",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/reactlace.umd.cjs",
+  "module": "./dist/reactlace.js",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist-react/index.d.ts",
-        "default": "./dist-react/reactlace.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/reactlace.js"
       },
-      "require": "./dist-react/reactlace.umd.cjs"
+      "require": "./dist/reactlace.umd.cjs"
     },
     "./styles/reactlace.css": {
-      "import": "./dist-react/styles/index.css",
-      "require": "./dist-react/styles/index.css"
+      "import": "./dist/styles/index.css",
+      "require": "./dist/styles/index.css"
     },
     "./styles/theme_primereact.css": {
-      "import": "./dist-react/styles/theme.css",
-      "require": "./dist-react/styles/theme.css"
+      "import": "./dist/styles/theme.css",
+      "require": "./dist/styles/theme.css"
     }
   },
   "scripts": {
-    "dev": "vite --config vite.config.react.ts",
-    "build": "tsc --project tsconfig.react.json --noEmit && vite build --config vite.config.react.ts",
-    "preview": "vite preview --config vite.config.react.ts",
-    "type-check": "tsc --project tsconfig.react.json --noEmit",
-    "lint": "eslint ./src-react --ext .tsx,.ts --fix",
-    "storybook": "storybook dev -p 6007 -c .storybook-react",
-    "build-storybook": "storybook build -c .storybook-react -o docs-react",
-    "build-publish": "vite build --config vite.config.react.ts && npm publish --access public"
+    "dev": "vite --config vite.config.ts",
+    "build": "tsc --project tsconfig.json --noEmit && vite build --config vite.config.ts",
+    "preview": "vite preview --config vite.config.ts",
+    "type-check": "tsc --project tsconfig.json --noEmit",
+    "lint": "eslint ./src --ext .tsx,.ts --fix",
+    "storybook": "storybook dev -p 6007 -c .storybook",
+    "build-storybook": "storybook build -c .storybook -o docs",
+    "build-publish": "vite build --config vite.config.ts && npm publish --access public"
   },
   "peerDependencies": {
     "@mdi/svg": "^7.4.47",
     "@shoelace-style/shoelace": "^2.17.1",
-    "primereact": "^10.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "primereact": "^10.9.7",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^1.4.0",
-    "@storybook/addon-essentials": "^8.1.1",
-    "@storybook/addon-interactions": "^8.1.1",
-    "@storybook/addon-links": "^8.1.1",
-    "@storybook/blocks": "^8.1.1",
-    "@storybook/react": "^8.1.1",
-    "@storybook/react-vite": "^8.1.1",
-    "@storybook/test": "^8.1.1",
+    "@chromatic-com/storybook": "^4.1.3",
+    "@storybook/addon-docs": "^10.1.11",
+    "@storybook/addon-links": "^10.1.11",
+    "@storybook/react": "^10.1.11",
+    "@storybook/react-vite": "^10.1.11",
     "@types/node": "^18.19.3",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -77,9 +74,9 @@
     "eslint": "^8.49.0",
     "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-storybook": "^0.8.0",
+    "eslint-plugin-storybook": "^10.1.11",
     "postcss": "^8.4.33",
-    "storybook": "^8.1.1",
+    "storybook": "^10.1.11",
     "tailwindcss": "^3.4.1",
     "typescript": "~5.3.0",
     "vite": "^5.0.10",

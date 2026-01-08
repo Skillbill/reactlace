@@ -25,7 +25,7 @@ import pageLast from '@mdi/svg/svg/page-last.svg'
 import chevronUp from '@mdi/svg/svg/chevron-up.svg'
 import plusCircle from '@mdi/svg/svg/plus-circle.svg'
 
-export const icons: Record<string, string> = {
+export const icons = {
   paperclip,
   calendar,
   cogs,
@@ -55,9 +55,9 @@ export const icons: Record<string, string> = {
 }
 
 export const addIcon = (name: string, svg: string) => {
-  icons[name] = svg
+  icons[name as keyof typeof icons] = svg
 }
 
-export const addIcons = (iconList: { name: string; svg: string }[]) => {
-  iconList.forEach((icon) => addIcon(icon.name, icon.svg))
+export const addIcons = (icons: { name: string; svg: string }[]) => {
+  icons.forEach((icon) => addIcon(icon.name, icon.svg))
 }

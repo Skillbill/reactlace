@@ -15,10 +15,13 @@ export type {
 
 export type {
   AutoCompleteChangeEvent,
-  AutoCompleteCompleteEvent
-} from 'primereact/autocomplete'
+  AutoCompleteCompleteEvent,
+  AutoCompleteDropdownClickEvent,
+  AutoCompleteItemSelectEvent,
+  AutoCompleteItemUnselectEvent
+} from 'primevue/autocomplete'
 
-export interface RLInputRuleType {
-  validateFn: (value: unknown) => boolean
+export interface VLInputRuleType {
+  validateFn: Function
   message: string
 }

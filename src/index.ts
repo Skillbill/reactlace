@@ -1,13 +1,14 @@
-export * from './shoelace'
-export { addIcon, addIcons } from './icons'
+// Components
 export * from './components'
 
-import { useIcons } from './shoelace'
-import './assets/main.css'
+// Context
+export * from './context'
 
-import PrimeVue from 'primevue/config'
+// Hooks
+export * from './hooks'
 
-export const installVuelace = (app: any) => {
-  useIcons('mdi')
-  return app.use(PrimeVue)
-}
+// Icons
+export * from './icons'
+
+// Shoelace utilities
+export * from './shoelace'

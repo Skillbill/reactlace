@@ -1,12 +1,14 @@
 import * as shoelace from '@shoelace-style/shoelace/dist/shoelace.js'
 import { icons } from './icons'
-import type {
+import {
   IconLibraryMutator,
   IconLibraryResolver
 } from '@shoelace-style/shoelace/dist/components/icon/library.js'
 
 const SHOELACE_ICONS_LIBRARY = 'shoelace'
 const MDI_ICONS_LIBRARY = 'mdi'
+
+//TODO : icons system rework - add support for custom icons
 
 export const useIcons = (library: string = 'mdi') => {
   if (library === SHOELACE_ICONS_LIBRARY) {
@@ -18,7 +20,7 @@ export const useIcons = (library: string = 'mdi') => {
 }
 
 export const registerIconLibrary = (
-  library: string,
+  library: any,
   resolver: IconLibraryResolver,
   mutator?: IconLibraryMutator
 ) => {
@@ -30,12 +32,12 @@ export const registerIconLibrary = (
 
 const overrideDefaultWithMdi = () => {
   shoelace.registerIconLibrary('default', {
-    resolver: (name: string) => icons[name],
+    resolver: (name: string) => icons[name as keyof typeof icons],
     mutator: (svg) => svg.setAttribute('fill', 'currentColor')
   })
 }
 
-const systemDictionary: Record<string, string> = {
+const systemDictonary: { [key: string]: string } = {
   caret: 'chevronDown',
   check: 'check',
   'chevron-down': 'chevronDown',
@@ -44,7 +46,7 @@ const systemDictionary: Record<string, string> = {
   copy: 'contentCopy',
   eye: 'eyeOutline',
   'eye-slash': 'eyeOffOutline',
-  eyedropper: 'eyeDropper',
+  eyedropper: 'eyedropper',
   'grip-vertical': 'dragVertical',
   indeterminate: 'minus',
   'person-fill': 'account',
@@ -59,8 +61,8 @@ const systemDictionary: Record<string, string> = {
 const overrideSystemWithMdi = () => {
   shoelace.registerIconLibrary('system', {
     resolver: (name: string) => {
-      const mappedName = systemDictionary[name] || name
-      return icons[mappedName]
+      name = systemDictonary[name] || name
+      return icons[name as keyof typeof icons]
     },
     mutator: (svg) => svg.setAttribute('fill', 'currentColor')
   })

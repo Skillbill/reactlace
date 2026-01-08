@@ -1,4 +1,4 @@
-import type { StorybookConfig } from '@storybook/vue3-vite'
+import type { StorybookConfig } from '@storybook/react-vite'
 
 const config: StorybookConfig = {
   stories: [
@@ -17,15 +17,14 @@ const config: StorybookConfig = {
   ],
   addons: [
     '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@chromatic-com/storybook'
+    '@storybook/addon-docs',
   ],
   staticDirs: ['../src/stories/docs/public'],
   framework: {
-    name: '@storybook/vue3-vite',
+    name: '@storybook/react-vite',
     options: {}
   },
   docs: {}
 }
+
 export default config

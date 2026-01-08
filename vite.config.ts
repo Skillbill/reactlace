@@ -9,15 +9,15 @@ export default defineConfig({
   plugins: [
     react(),
     dts({
-      include: ['src-react/**/*'],
-      outDir: 'dist-react'
+      include: ['src/**/*'],
+      outDir: 'dist'
     })
   ],
   build: {
-    outDir: 'dist-react',
+    outDir: 'dist',
     lib: {
       entry: [
-        resolve(__dirname, 'src-react/index.ts'),
+        resolve(__dirname, 'src/index.ts'),
         resolve(__dirname, 'node_modules/primereact/resources/themes/saga-blue/theme.css')
       ],
       name: 'Reactlace',
@@ -38,7 +38,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src-react', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
 })
