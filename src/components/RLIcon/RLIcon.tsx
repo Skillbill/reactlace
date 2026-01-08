@@ -14,7 +14,7 @@ declare global {
 }
 
 export const RLIcon = forwardRef<HTMLElement, RLIconProps>(
-  ({ name, library = 'default', className, onClick }, ref) => {
+  ({ name, library = 'default', className, onClick, slot }, ref) => {
     return (
       <sl-icon
         ref={ref}
@@ -22,6 +22,7 @@ export const RLIcon = forwardRef<HTMLElement, RLIconProps>(
         library={library}
         name={name}
         onClick={onClick}
+        slot={slot}
       />
     )
   }

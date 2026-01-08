@@ -5,4 +5,5 @@ export interface RLIconProps {
   library?: string
   className?: string
   onClick?: (event: MouseEvent) => void
+  slot?: string
 }
