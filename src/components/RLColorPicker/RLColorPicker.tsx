@@ -6,6 +6,7 @@ declare global {
     interface IntrinsicElements {
       'sl-dropdown': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         hoist?: boolean
+        open?: boolean
       }
       'sl-color-picker': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         hoist?: boolean

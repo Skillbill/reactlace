@@ -30,6 +30,9 @@ declare global {
         autofocus?: boolean
         spellcheck?: boolean
         inputmode?: string
+        min?: number
+        max?: number
+        step?: number | 'any'
         title?: string
         class?: string
       }
