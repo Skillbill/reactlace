@@ -123,6 +123,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
         setCurrentPage(response.page.currentPage)
         setTotalRows(response.page.totalRows)
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e)
         onFetchError?.()
       }

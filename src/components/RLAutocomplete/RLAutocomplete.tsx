@@ -61,8 +61,6 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
     }))
 
     const handleChange = (evt: { value: RLSelectOptionType | string | undefined }) => {
-      console.log('handleChange evt.value:', evt.value)
-
       setInputModel(evt.value)
 
       if (!forceSelection) {
@@ -79,8 +77,6 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
     }
 
     const handleItemSelect = (evt: { value: RLSelectOptionType }) => {
-      console.log('handleItemSelect evt.value:', evt.value)
-
       setInputModel(evt.value)
       onChange?.(evt.value.value)
       onItemSelect?.(evt)
