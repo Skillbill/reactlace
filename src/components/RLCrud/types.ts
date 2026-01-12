@@ -64,7 +64,7 @@ export interface RLCrudProps {
   highlightLastEdited?: boolean
   highlightLastEditedClass?: string
   persistActionDialog?: boolean
-  rowClass?: (data: unknown) => (string | object)[] | undefined
+  rowClassName?: (data: unknown) => string | string[] | undefined
   getItems: (
     page: number,
     rowsPerPage: number,

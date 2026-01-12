@@ -1,7 +1,8 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type ComponentType } from 'react'
 import type { RLCrudProps, RLCrudRef, RLCrudActionType } from './types'
 import type { RLCrudFormFieldType } from '../RLCrudForm'
 import type { RLCrudFiltersRef } from '../RLCrudFilters'
+import type { RLCrudInputValueType } from '../RLCrudInput'
 import { RLCrudAction } from '../RLCrudAction'
 import { RLPaginator } from '../RLPaginator'
 import { RLDialog } from '../RLDialog'
@@ -43,7 +44,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
       highlightLastEdited = true,
       highlightLastEditedClass = '!bg-row-selected',
       persistActionDialog = true,
-      rowClass: externalRowClass,
+      rowClassName: externalRowClassName,
       getItems,
       addItem,
       editItem,
@@ -55,7 +56,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
     },
     ref
   ) => {
-    const [items, setItems] = useState<unknown[]>([])
+    const [items, setItems] = useState<Record<string, unknown>[]>([])
     const [currentPage, setCurrentPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(
       rowsPerPageOptions.includes(initialRowsPerPage)
@@ -91,7 +92,10 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
           sortable: header.sortable,
           ...(header.columnProps ? { columnProps: header.columnProps } : {}),
           ...(header.type
-            ? { component: components?.[header.type], componentProps: header.componentProps }
+            ? {
+                component: components?.[header.type] as ComponentType<{ data: unknown; field: string; [key: string]: unknown }>,
+                componentProps: header.componentProps as Record<string, unknown>
+              }
             : {})
         })),
       [headers, translationFn, components]
@@ -115,7 +119,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
           return
         }
 
-        setItems(response.result)
+        setItems(response.result as Record<string, unknown>[])
         setCurrentPage(response.page.currentPage)
         setTotalRows(response.page.totalRows)
       } catch (e) {
@@ -171,29 +175,36 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
       await fetchData()
     }, [fetchData])
 
-    const rowClass = useCallback(
+    const rowClassName = useCallback(
       (row: unknown) => {
-        const externalClasses = externalRowClass?.(row) || []
+        const externalResult = externalRowClassName?.(row)
+        const externalClasses = Array.isArray(externalResult)
+          ? externalResult
+          : externalResult
+            ? [externalResult]
+            : []
+
         if ((row as Record<string, unknown>)[primary_key] === lastSelectedItem && highlightLastEdited) {
-          return [...externalClasses, highlightLastEditedClass]
+          return [...externalClasses, highlightLastEditedClass].join(' ')
         }
-        return externalClasses
+        return externalClasses.join(' ')
       },
-      [externalRowClass, primary_key, lastSelectedItem, highlightLastEdited, highlightLastEditedClass]
+      [externalRowClassName, primary_key, lastSelectedItem, highlightLastEdited, highlightLastEditedClass]
     )
 
     const onAdd = useCallback(
       async (data: Record<string, unknown>) => {
         const response = await addItem?.(data)
+        const responseRecord = response as Record<string, unknown>
         const newId =
-          (response as Record<string, unknown>)?.result?.[primary_key] ??
-          (response as Record<string, unknown>)?.[primary_key]
+          ((responseRecord?.result as Record<string, unknown>)?.[primary_key]) ??
+          responseRecord?.[primary_key]
         setLastSelectedItem(newId)
 
         if (goToInsertedRow) {
           skipWatchersRef.current = true
-          setFiltersApplied({ [primary_key]: newId })
-          filtersRef.current?.setFilterModel({ [primary_key]: newId })
+          setFiltersApplied({ [primary_key]: newId as RLCrudInputValueType })
+          filtersRef.current?.setFilterModel({ [primary_key]: newId as RLCrudInputValueType })
           filtersRef.current?.setOpen(true)
           setCurrentPage(1)
           await Promise.resolve() // Allow state to update
@@ -291,7 +302,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
           actions={[]}
           paginator={false}
           actionHeaderLabel={translationFn(actionHeaderI18nKey)}
-          rowClass={rowClass}
+          rowClassName={rowClassName}
           actionsSlot={renderActions}
           emptySlot={<div className="flex justify-center p-4">Empty</div>}
         />
@@ -348,7 +359,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
               requiredRuleMessage={translationFn(requiredI18nKey)}
               cancelLabel={translationFn(cancelI18nKey)}
               confirmLabel={translationFn(editI18nKey)}
-              value={selectedItem ?? undefined}
+              value={(selectedItem as { [key: string]: RLCrudInputValueType }) ?? undefined}
               primaryKey={primary_key}
               onClose={closeDialog}
               onCancel={closeDialog}

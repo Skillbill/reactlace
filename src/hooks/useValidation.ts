@@ -1,9 +1,5 @@
 import { useState, useCallback } from 'react'
-
-export interface RLInputRuleType {
-  validateFn: (value: unknown) => boolean
-  message: string
-}
+import type { RLInputRuleType } from '../components/utils/types'
 
 export interface UseValidationOptions {
   rules?: RLInputRuleType[]

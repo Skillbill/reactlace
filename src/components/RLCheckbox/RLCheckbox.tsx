@@ -18,6 +18,11 @@ declare global {
         form?: string
         required?: boolean
         class?: string
+        onSlInput?: (event: Event) => void
+        onSlChange?: (event: Event) => void
+        onSlBlur?: (event: Event) => void
+        onSlFocus?: (event: Event) => void
+        onSlInvalid?: (event: Event) => void
       }
     }
   }

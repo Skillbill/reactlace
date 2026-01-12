@@ -8,6 +8,10 @@ declare global {
     interface IntrinsicElements {
       'sl-details': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         open?: boolean
+        onSlShow?: (event: Event) => void
+        onSlHide?: (event: Event) => void
+        onSlAfterShow?: (event: Event) => void
+        onSlAfterHide?: (event: Event) => void
       }
     }
   }
@@ -19,6 +23,7 @@ export const RLExpansionCard = forwardRef<RLExpansionCardRef, RLExpansionCardPro
       title,
       open,
       onOpenChange,
+      className,
       onShow,
       onHide,
       onAfterShow,
@@ -75,6 +80,7 @@ export const RLExpansionCard = forwardRef<RLExpansionCardRef, RLExpansionCardPro
     return (
       <sl-details
         ref={detailsRef}
+        className={className}
         open={open || undefined}
         onSlShow={handleShow}
         onSlHide={handleHide}

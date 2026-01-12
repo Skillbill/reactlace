@@ -36,7 +36,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
     ref
   ) => {
     const autocompleteRef = useRef<AutoComplete>(null)
-    const [inputModel, setInputModel] = useState<RLSelectOptionType | string | null>(null)
+    const [inputModel, setInputModel] = useState<RLSelectOptionType | string | undefined>(undefined)
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
 
     // Sync inputModel with value
@@ -45,7 +45,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
         setInputModel({ value: '', text: '' })
       } else {
         const found = options.find((option) => value === option.value)
-        setInputModel(found ?? (!forceSelection ? { value, text: value } : null))
+        setInputModel(found ?? (!forceSelection ? { value, text: value } : undefined))
       }
     }, [value, options, forceSelection])
 
@@ -60,7 +60,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
       validate: () => validate(value)
     }))
 
-    const handleChange = (evt: { value: RLSelectOptionType | string | null }) => {
+    const handleChange = (evt: { value: RLSelectOptionType | string | undefined }) => {
       console.log('handleChange evt.value:', evt.value)
 
       setInputModel(evt.value)
@@ -143,7 +143,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
           completeMethod={handleComplete}
           onClick={handleClick}
           onFocus={handleFocus}
-          onDropdownClick={(evt) => onDropdownClick?.(evt.originalEvent)}
+          onDropdownClick={(evt) => onDropdownClick?.(evt.originalEvent.nativeEvent)}
           onClear={onClear}
           onShow={onShow}
           onHide={onHide}
