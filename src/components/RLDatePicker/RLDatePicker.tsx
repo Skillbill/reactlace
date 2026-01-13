@@ -1,20 +1,12 @@
 import { forwardRef, useImperativeHandle, useCallback, useState, useMemo, useEffect } from 'react'
 import { Calendar } from 'primereact/calendar'
+import SlDropdown from '@shoelace-style/shoelace/dist/react/dropdown/index.js'
+import SlIconButton from '@shoelace-style/shoelace/dist/react/icon-button/index.js'
 import type { RLDatePickerProps, RLDatePickerRef } from './types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
 import { RLIcon } from '../RLIcon'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-icon-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        library?: string
-        name?: string
-      }
-    }
-  }
-}
+import { RLInput } from '../RLInput'
 
 export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
   (
@@ -111,28 +103,28 @@ export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
       [disabled]
     )
 
-    const handleShow = useCallback((event: Event) => {
+    const handleShow = useCallback((event: CustomEvent) => {
       event.stopPropagation()
       setIsDropdownOpen(true)
     }, [])
 
-    const handleHide = useCallback((event: Event) => {
+    const handleHide = useCallback((event: CustomEvent) => {
       event.stopPropagation()
       setIsDropdownOpen(false)
     }, [])
 
     return (
-      <sl-dropdown open={isDropdownOpen || undefined} hoist onsl-show={handleShow} onsl-hide={handleHide}>
+      <SlDropdown open={isDropdownOpen || undefined} hoist onSlShow={handleShow} onSlHide={handleHide}>
         <div className="relative" slot="trigger">
-          <sl-input
-            class={`date-input ${errorMessage ? 'error' : ''}`}
+          <RLInput
+            className={`date-input ${errorMessage ? 'error' : ''}`}
             onClick={handleInputClick}
             value={formattedValue}
-            name={name || undefined}
-            label={label || undefined}
-            disabled={disabled || undefined}
-            required={required || undefined}
-            placeholder={placeholder || undefined}
+            name={name}
+            label={label}
+            disabled={disabled}
+            required={required}
+            placeholder={placeholder}
             readonly
           >
             <div
@@ -140,11 +132,11 @@ export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
               className={`flex items-center justify-end gap-2 ${disabled ? 'cursor-not-allowed' : ''}`}
             >
               {clearable && value && (
-                <sl-icon-button library="system" name="windowClose" onClick={handleClear} />
+                <SlIconButton library="system" name="windowClose" onClick={handleClear} />
               )}
               <RLIcon name="calendar" />
             </div>
-          </sl-input>
+          </RLInput>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         </div>
         <Calendar
@@ -158,7 +150,7 @@ export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
           showTime={withTime}
           panelClassName="min-w-min !inline"
         />
-      </sl-dropdown>
+      </SlDropdown>
     )
   }
 )

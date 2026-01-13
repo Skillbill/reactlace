@@ -1,44 +1,9 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import SlInput from '@shoelace-style/shoelace/dist/react/input/index.js'
+import type SlInputElement from '@shoelace-style/shoelace/dist/components/input/input.js'
 import type { RLInputProps, RLInputRef } from './types'
-import type { SlChangeEvent } from '../utils/types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-input': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        type?: string
-        name?: string
-        value?: string
-        defaultValue?: string
-        size?: string
-        filled?: boolean
-        pill?: boolean
-        label?: string
-        'help-text'?: string
-        clearable?: boolean
-        disabled?: boolean
-        placeholder?: string
-        readonly?: boolean
-        'password-toggle'?: boolean
-        form?: string
-        required?: boolean
-        autocapitalize?: string
-        autocomplete?: string
-        autocorrect?: string
-        autofocus?: boolean
-        spellcheck?: boolean
-        inputmode?: string
-        min?: number
-        max?: number
-        step?: number | 'any'
-        title?: string
-        class?: string
-      }
-    }
-  }
-}
 
 export const RLInput = forwardRef<RLInputRef, RLInputProps>(
   (
@@ -58,6 +23,7 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
       placeholder,
       readonly,
       passwordToggle,
+      noSpinButtons,
       form,
       required,
       autocapitalize = 'off',
@@ -66,9 +32,14 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
       autofocus,
       spellcheck,
       inputmode = 'text',
+      min,
+      max,
+      step,
       rules = [],
       error,
       title,
+      className,
+      onClick,
       onFocus,
       onBlur,
       onInput,
@@ -93,87 +64,96 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
     }))
 
     const handleChange = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlChangeEvent
-        const target = evt.target as HTMLInputElement
+      (event: CustomEvent) => {
+        const target = event.target as SlInputElement
         const newValue = target?.value ?? ''
+        validate(newValue)
         onChange?.(newValue)
-        onSlChange?.(evt)
+        onSlChange?.(event)
       },
-      [onChange, onSlChange]
+      [onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
-      (event: Event) => {
-        onBlur?.(event as unknown as Parameters<NonNullable<typeof onBlur>>[0])
+      (event: CustomEvent) => {
+        onBlur?.(event)
       },
       [onBlur]
     )
 
     const handleFocus = useCallback(
-      (event: Event) => {
-        onFocus?.(event as unknown as Parameters<NonNullable<typeof onFocus>>[0])
+      (event: CustomEvent) => {
+        onFocus?.(event)
       },
       [onFocus]
     )
 
     const handleInput = useCallback(
-      (event: Event) => {
-        onInput?.(event as unknown as Parameters<NonNullable<typeof onInput>>[0])
+      (event: CustomEvent) => {
+        onInput?.(event)
       },
       [onInput]
     )
 
     const handleClear = useCallback(
-      (event: Event) => {
-        onClear?.(event as unknown as Parameters<NonNullable<typeof onClear>>[0])
+      (event: CustomEvent) => {
+        onClear?.(event)
       },
       [onClear]
     )
 
     const handleInvalid = useCallback(
-      (event: Event) => {
-        onInvalid?.(event as unknown as Parameters<NonNullable<typeof onInvalid>>[0])
+      (event: CustomEvent) => {
+        onInvalid?.(event)
       },
       [onInvalid]
     )
 
+    const combinedClassName = [className, errorMessage ? 'error' : undefined]
+      .filter(Boolean)
+      .join(' ') || undefined
+
     return (
       <div className="relative">
-        <sl-input
-          class={errorMessage ? 'error' : undefined}
-          value={value}
+        <SlInput
+          className={combinedClassName}
+          value={value ?? ''}
           type={type}
-          name={name || undefined}
-          defaultValue={defaultValue || undefined}
+          name={name}
+          defaultValue={defaultValue}
           size={size}
-          filled={filled || undefined}
-          pill={pill || undefined}
-          label={label || undefined}
-          help-text={helpText || undefined}
-          clearable={clearable || undefined}
-          disabled={disabled || undefined}
-          placeholder={placeholder || undefined}
-          readonly={readonly || undefined}
-          password-toggle={passwordToggle || undefined}
+          filled={filled}
+          pill={pill}
+          label={label}
+          helpText={helpText}
+          clearable={clearable}
+          disabled={disabled}
+          placeholder={placeholder}
+          readonly={readonly}
+          passwordToggle={passwordToggle}
+          noSpinButtons={noSpinButtons}
           form={form}
-          required={required || undefined}
-          autocapitalize={autocapitalize}
+          required={required}
+          autoCapitalize={autocapitalize}
           autocomplete={autocomplete}
-          autocorrect={autocorrect}
-          autofocus={autofocus || undefined}
-          spellcheck={spellcheck}
+          autoCorrect={autocorrect}
+          autoFocus={autofocus}
+          spellCheck={spellcheck}
           inputmode={inputmode}
+          min={min}
+          max={max}
+          step={step}
           title={title}
-          onsl-change={handleChange}
-          onsl-blur={handleBlur}
-          onsl-focus={handleFocus}
-          onsl-input={handleInput}
-          onsl-clear={handleClear}
-          onsl-invalid={handleInvalid}
+          onClick={onClick}
+          onSlChange={handleChange}
+          onSlBlur={handleBlur}
+          onSlFocus={handleFocus}
+          onSlInput={handleInput}
+          onSlClear={handleClear}
+          onSlInvalid={handleInvalid}
         >
           {children}
-        </sl-input>
+        </SlInput>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>
     )

@@ -1,6 +1,7 @@
-import { forwardRef, useImperativeHandle, useCallback, useEffect, useRef } from 'react'
+import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import SlInput from '@shoelace-style/shoelace/dist/react/input/index.js'
+import type SlInputElement from '@shoelace-style/shoelace/dist/components/input/input.js'
 import type { RLNumberInputProps, RLNumberInputRef } from './types'
-import type { SlChangeEvent } from '../utils/types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
 
@@ -41,7 +42,6 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
     },
     ref
   ) => {
-    const inputRef = useRef<HTMLElement>(null)
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
 
     useEffect(() => {
@@ -76,93 +76,88 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
     )
 
     const handleChange = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlChangeEvent
-        const target = evt.target as HTMLInputElement
-        const validValue = checkMinMax(target?.value ?? '')
+      (event: CustomEvent) => {
+        const target = event.target as SlInputElement
+        const newValue = target?.value ?? ''
+        const validValue = checkMinMax(newValue)
+        validate(validValue)
         onChange?.(validValue)
-        onSlChange?.(evt)
-
-        // Update input display if value was clamped
-        if (inputRef.current && validValue !== null) {
-          (inputRef.current as unknown as HTMLInputElement).value = validValue.toString()
-        }
+        onSlChange?.(event)
       },
-      [checkMinMax, onChange, onSlChange]
+      [checkMinMax, onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
-      (event: Event) => {
-        onBlur?.(event as unknown as Parameters<NonNullable<typeof onBlur>>[0])
+      (event: CustomEvent) => {
+        onBlur?.(event)
       },
       [onBlur]
     )
 
     const handleFocus = useCallback(
-      (event: Event) => {
-        onFocus?.(event as unknown as Parameters<NonNullable<typeof onFocus>>[0])
+      (event: CustomEvent) => {
+        onFocus?.(event)
       },
       [onFocus]
     )
 
     const handleInput = useCallback(
-      (event: Event) => {
-        onInput?.(event as unknown as Parameters<NonNullable<typeof onInput>>[0])
+      (event: CustomEvent) => {
+        onInput?.(event)
       },
       [onInput]
     )
 
     const handleClear = useCallback(
-      (event: Event) => {
+      (event: CustomEvent) => {
         onChange?.(null)
-        onClear?.(event as unknown as Parameters<NonNullable<typeof onClear>>[0])
+        onClear?.(event)
       },
       [onChange, onClear]
     )
 
     const handleInvalid = useCallback(
-      (event: Event) => {
-        onInvalid?.(event as unknown as Parameters<NonNullable<typeof onInvalid>>[0])
+      (event: CustomEvent) => {
+        onInvalid?.(event)
       },
       [onInvalid]
     )
 
     return (
       <div className="relative">
-        <sl-input
-          ref={inputRef}
-          class={errorMessage ? 'error' : undefined}
+        <SlInput
+          className={errorMessage ? 'error' : undefined}
           type="number"
           value={value?.toString() ?? ''}
-          name={name || undefined}
+          name={name}
           defaultValue={defaultValue}
           size={size}
-          filled={filled || undefined}
-          pill={pill || undefined}
-          label={label || undefined}
-          help-text={helpText || undefined}
-          clearable={clearable || undefined}
-          disabled={disabled || undefined}
-          placeholder={placeholder || undefined}
-          readonly={readonly || undefined}
-          no-spin-buttons={noSpinButtons || undefined}
+          filled={filled}
+          pill={pill}
+          label={label}
+          helpText={helpText}
+          clearable={clearable}
+          disabled={disabled}
+          placeholder={placeholder}
+          readonly={readonly}
+          noSpinButtons={noSpinButtons}
           form={form}
-          required={required || undefined}
+          required={required}
           min={min}
           max={max}
           step={step}
           autocomplete={autocomplete}
-          autofocus={autofocus || undefined}
+          autoFocus={autofocus}
           title={title}
-          onsl-change={handleChange}
-          onsl-blur={handleBlur}
-          onsl-focus={handleFocus}
-          onsl-input={handleInput}
-          onsl-clear={handleClear}
-          onsl-invalid={handleInvalid}
+          onSlChange={handleChange}
+          onSlBlur={handleBlur}
+          onSlFocus={handleFocus}
+          onSlInput={handleInput}
+          onSlClear={handleClear}
+          onSlInvalid={handleInvalid}
         >
           {children}
-        </sl-input>
+        </SlInput>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>
     )

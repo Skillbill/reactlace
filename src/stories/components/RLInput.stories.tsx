@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { RLInput } from '../../components'
+import { useState } from 'react'
 
 const meta = {
   title: 'Components/Input',
@@ -14,6 +15,17 @@ const meta = {
     },
     autocorrect: { control: 'select', options: ['off', 'on', undefined] },
     inputmode: { control: 'select', options: ['none', 'text', 'email', undefined] }
+  },
+  render(args) {
+    const [inputValue, setInputValue] = useState<string | undefined>(undefined)
+
+    return (
+      <RLInput
+        {...args}
+        value={inputValue}
+        onChange={setInputValue}
+      />
+    )
   }
 } satisfies Meta<typeof RLInput>
 

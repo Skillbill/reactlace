@@ -12,19 +12,20 @@ import type {
 export interface RLInputProps {
   value?: string
   onChange?: (value: string) => void
-  type?: 'password' | 'text' | 'email'
+  type?: 'password' | 'text' | 'email' | 'number'
   name?: string
   defaultValue?: string
   size?: 'small' | 'medium' | 'large'
   filled?: boolean
   pill?: boolean
-  label: string
+  label?: string
   helpText?: string
   clearable?: boolean
   disabled?: boolean
   placeholder?: string
   readonly?: boolean
   passwordToggle?: boolean
+  noSpinButtons?: boolean
   form?: string
   required?: boolean
   autocapitalize?: 'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'
@@ -32,10 +33,15 @@ export interface RLInputProps {
   autocorrect?: 'off' | 'on'
   autofocus?: boolean
   spellcheck?: boolean
-  inputmode?: 'none' | 'text' | 'email'
+  inputmode?: 'none' | 'text' | 'email' | 'numeric' | 'decimal'
+  min?: number
+  max?: number
+  step?: number | 'any'
   rules?: RLInputRuleType[]
   error?: string
   title?: string
+  className?: string
+  onClick?: (e: React.MouseEvent) => void
   onFocus?: (e: SlFocusEvent) => void
   onBlur?: (e: SlBlurEvent) => void
   onInput?: (e: SlInputEvent) => void

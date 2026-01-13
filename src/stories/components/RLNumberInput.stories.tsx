@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { RLNumberInput } from '../../components'
+import { useState } from 'react'
 
 const meta = {
   title: 'Components/Number input',
@@ -8,7 +9,18 @@ const meta = {
   argTypes: {
     size: { control: 'select', options: ['small', 'medium', 'large', undefined] }
   },
-  args: {}
+  args: {},
+  render(args) {
+    const [numberValue, setNumberValue] = useState<number | null>(null)
+
+    return (
+      <RLNumberInput
+        {...args}
+        value={numberValue}
+        onChange={setNumberValue}
+      />
+    )
+  }
 } satisfies Meta<typeof RLNumberInput>
 
 export default meta
