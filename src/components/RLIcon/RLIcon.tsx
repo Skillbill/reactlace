@@ -1,24 +1,14 @@
 import { forwardRef } from 'react'
+import SlIcon from '@shoelace-style/shoelace/dist/react/icon/index.js'
+import type SlIconElement from '@shoelace-style/shoelace/dist/components/icon/icon.js'
 import type { RLIconProps } from './types'
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-icon': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        name?: string
-        library?: string
-        class?: string
-      }
-    }
-  }
-}
-
-export const RLIcon = forwardRef<HTMLElement, RLIconProps>(
+export const RLIcon = forwardRef<SlIconElement, RLIconProps>(
   ({ name, library = 'default', className, onClick, slot }, ref) => {
     return (
-      <sl-icon
+      <SlIcon
         ref={ref}
-        class={className}
+        className={className}
         library={library}
         name={name}
         onClick={onClick}

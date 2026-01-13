@@ -1,25 +1,8 @@
 import { forwardRef, useImperativeHandle, useCallback, useRef } from 'react'
+import SlDialog from '@shoelace-style/shoelace/dist/react/dialog/index.js'
+import type SlDialogElement from '@shoelace-style/shoelace/dist/components/dialog/dialog.js'
 import type { RLDialogProps, RLDialogRef } from './types'
 import type { SlRequestCloseEvent } from '../utils/types'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-dialog': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        label?: string
-        open?: boolean
-        noHeader?: boolean
-        class?: string
-        onSlShow?: (event: Event) => void
-        onSlAfterShow?: (event: Event) => void
-        onSlHide?: (event: Event) => void
-        onSlAfterHide?: (event: Event) => void
-        onSlInitialFocus?: (event: Event) => void
-        onSlRequestClose?: (event: Event) => void
-      }
-    }
-  }
-}
 
 export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
   (
@@ -40,7 +23,7 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
     },
     ref
   ) => {
-    const dialogRef = useRef<HTMLElement & { open: boolean; show: () => void; hide: () => void }>(null)
+    const dialogRef = useRef<SlDialogElement>(null)
 
     useImperativeHandle(ref, () => ({
       open: dialogRef.current?.open,
@@ -49,8 +32,8 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
     }))
 
     const handleRequestClose = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlRequestCloseEvent
+      (event: CustomEvent) => {
+        const evt = event as SlRequestCloseEvent
         if (noCloseOnOutsideClick && evt.detail.source === 'overlay') {
           evt.preventDefault()
           return
@@ -63,47 +46,47 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
     )
 
     const handleShow = useCallback(
-      (event: Event) => {
-        onShow?.(event as unknown as Parameters<NonNullable<typeof onShow>>[0])
+      (event: CustomEvent) => {
+        onShow?.(event)
       },
       [onShow]
     )
 
     const handleAfterShow = useCallback(
-      (event: Event) => {
-        onAfterShow?.(event as unknown as Parameters<NonNullable<typeof onAfterShow>>[0])
+      (event: CustomEvent) => {
+        onAfterShow?.(event)
       },
       [onAfterShow]
     )
 
     const handleHide = useCallback(
-      (event: Event) => {
-        onHide?.(event as unknown as Parameters<NonNullable<typeof onHide>>[0])
+      (event: CustomEvent) => {
+        onHide?.(event)
       },
       [onHide]
     )
 
     const handleAfterHide = useCallback(
-      (event: Event) => {
-        onAfterHide?.(event as unknown as Parameters<NonNullable<typeof onAfterHide>>[0])
+      (event: CustomEvent) => {
+        onAfterHide?.(event)
       },
       [onAfterHide]
     )
 
     const handleInitialFocus = useCallback(
-      (event: Event) => {
-        onInitialFocus?.(event as unknown as Parameters<NonNullable<typeof onInitialFocus>>[0])
+      (event: CustomEvent) => {
+        onInitialFocus?.(event)
       },
       [onInitialFocus]
     )
 
     return (
-      <sl-dialog
+      <SlDialog
         ref={dialogRef}
-        class={className ?? 'dialog'}
+        className={className ?? 'dialog'}
         label={label}
-        open={open || undefined}
-        noHeader={noHeader || undefined}
+        open={open}
+        noHeader={noHeader}
         onSlShow={handleShow}
         onSlAfterShow={handleAfterShow}
         onSlHide={handleHide}
@@ -112,7 +95,7 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
         onSlRequestClose={handleRequestClose}
       >
         {children}
-      </sl-dialog>
+      </SlDialog>
     )
   }
 )
