@@ -1,40 +1,11 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect, useMemo } from 'react'
+import SlSelect from '@shoelace-style/shoelace/dist/react/select/index.js'
+import SlOption from '@shoelace-style/shoelace/dist/react/option/index.js'
+import type SlSelectElement from '@shoelace-style/shoelace/dist/components/select/select.js'
 import type { RLSelectProps, RLSelectRef } from './types'
-import type { SlChangeEvent } from '../utils/types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
 import { RLIcon } from '../RLIcon'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        name?: string
-        value?: string | string[]
-        defaultValue?: string | string[]
-        size?: string
-        multiple?: boolean
-        placeholder?: string
-        maxOptionsVisible?: number
-        disabled?: boolean
-        clearable?: boolean
-        pill?: boolean
-        filled?: boolean
-        placement?: string
-        helpText?: string
-        label?: string
-        required?: boolean
-        form?: string
-        hoist?: boolean
-        class?: string
-        getTag?: (option: { getTextLabel: () => string }) => string
-      }
-      'sl-option': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        value?: string
-      }
-    }
-  }
-}
 
 export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
   (
@@ -104,9 +75,8 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
     }))
 
     const handleChange = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlChangeEvent
-        const target = evt.target as HTMLSelectElement & { value: string | string[] }
+      (event: CustomEvent) => {
+        const target = event.target as SlSelectElement
         const rawValue = target?.value
 
         let newValue: string | string[] | null
@@ -118,75 +88,76 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
           newValue = null
         }
 
+        validate(newValue)
         onChange?.(newValue)
-        onSlChange?.(evt)
+        onSlChange?.(event)
       },
-      [optionsDict, onChange, onSlChange]
+      [optionsDict, onChange, onSlChange, validate]
     )
 
     const handleClear = useCallback(
-      (event: Event) => {
-        onClear?.(event as unknown as Parameters<NonNullable<typeof onClear>>[0])
+      (event: CustomEvent) => {
+        onClear?.(event)
       },
       [onClear]
     )
 
     const handleBlur = useCallback(
-      (event: Event) => {
-        onBlur?.(event as unknown as Parameters<NonNullable<typeof onBlur>>[0])
+      (event: CustomEvent) => {
+        onBlur?.(event)
       },
       [onBlur]
     )
 
     const handleFocus = useCallback(
-      (event: Event) => {
-        onFocus?.(event as unknown as Parameters<NonNullable<typeof onFocus>>[0])
+      (event: CustomEvent) => {
+        onFocus?.(event)
       },
       [onFocus]
     )
 
     const handleInput = useCallback(
-      (event: Event) => {
-        onInput?.(event as unknown as Parameters<NonNullable<typeof onInput>>[0])
+      (event: CustomEvent) => {
+        onInput?.(event)
       },
       [onInput]
     )
 
     const handleInvalid = useCallback(
-      (event: Event) => {
-        onInvalid?.(event as unknown as Parameters<NonNullable<typeof onInvalid>>[0])
+      (event: CustomEvent) => {
+        onInvalid?.(event)
       },
       [onInvalid]
     )
 
     const handleShow = useCallback(
-      (event: Event) => {
+      (event: CustomEvent) => {
         event.stopPropagation()
-        onShow?.(event as unknown as Parameters<NonNullable<typeof onShow>>[0])
+        onShow?.(event)
       },
       [onShow]
     )
 
     const handleHide = useCallback(
-      (event: Event) => {
+      (event: CustomEvent) => {
         event.stopPropagation()
-        onHide?.(event as unknown as Parameters<NonNullable<typeof onHide>>[0])
+        onHide?.(event)
       },
       [onHide]
     )
 
     const handleAfterShow = useCallback(
-      (event: Event) => {
+      (event: CustomEvent) => {
         event.stopPropagation()
-        onAfterShow?.(event as unknown as Parameters<NonNullable<typeof onAfterShow>>[0])
+        onAfterShow?.(event)
       },
       [onAfterShow]
     )
 
     const handleAfterHide = useCallback(
-      (event: Event) => {
+      (event: CustomEvent) => {
         event.stopPropagation()
-        onAfterHide?.(event as unknown as Parameters<NonNullable<typeof onAfterHide>>[0])
+        onAfterHide?.(event)
       },
       [onAfterHide]
     )
@@ -195,48 +166,50 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
       return `<sl-tag removable>${option.getTextLabel()}</sl-tag>`
     }, [])
 
+    const combinedClassName = `min-w-full listbox ${errorMessage ? 'error' : ''}`
+
     return (
       <div className="relative">
-        <sl-select
-          class={`min-w-full listbox ${errorMessage ? 'error' : ''}`}
+        <SlSelect
+          className={combinedClassName}
           hoist
           value={templateValue}
-          name={name || undefined}
-          defaultValue={defaultValue || undefined}
+          name={name}
+          defaultValue={defaultValue}
           size={size}
-          multiple={multiple || undefined}
-          placeholder={placeholder || undefined}
+          multiple={multiple}
+          placeholder={placeholder}
           maxOptionsVisible={maxOptionsVisible}
-          disabled={disabled || undefined}
-          clearable={clearable || undefined}
-          pill={pill || undefined}
-          filled={filled || undefined}
+          disabled={disabled}
+          clearable={clearable}
+          pill={pill}
+          filled={filled}
           placement={placement}
-          helpText={helpText || undefined}
-          label={label || undefined}
-          required={required || undefined}
+          helpText={helpText}
+          label={label}
+          required={required}
           form={form}
           getTag={getTag || defaultGetTag}
-          onsl-change={handleChange}
-          onsl-clear={handleClear}
-          onsl-blur={handleBlur}
-          onsl-input={handleInput}
-          onsl-focus={handleFocus}
-          onsl-show={handleShow}
-          onsl-after-show={handleAfterShow}
-          onsl-hide={handleHide}
-          onsl-after-hide={handleAfterHide}
-          onsl-invalid={handleInvalid}
+          onSlChange={handleChange}
+          onSlClear={handleClear}
+          onSlBlur={handleBlur}
+          onSlInput={handleInput}
+          onSlFocus={handleFocus}
+          onSlShow={handleShow}
+          onSlAfterShow={handleAfterShow}
+          onSlHide={handleHide}
+          onSlAfterHide={handleAfterHide}
+          onSlInvalid={handleInvalid}
         >
           {options.map((option) => (
-            <sl-option key={option.value} value={`${option.value}`.replaceAll(' ', '_')}>
+            <SlOption key={option.value} value={`${option.value}`.replaceAll(' ', '_')}>
               {option.icon && (
                 <RLIcon name={option.icon} library={option.icon_library} slot="prefix" />
               )}
               {option.text}
-            </sl-option>
+            </SlOption>
           ))}
-        </sl-select>
+        </SlSelect>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>
     )
