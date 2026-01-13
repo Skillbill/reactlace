@@ -1,31 +1,9 @@
 import { forwardRef } from 'react'
+import SlButton from '@shoelace-style/shoelace/dist/react/button/index.js'
+import type SlButtonElement from '@shoelace-style/shoelace/dist/components/button/button.js'
 import type { RLButtonProps } from './types'
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        variant?: string
-        size?: string
-        caret?: boolean
-        disabled?: boolean
-        loading?: boolean
-        outline?: boolean
-        pill?: boolean
-        circle?: boolean
-        type?: string
-        name?: string
-        value?: string
-        href?: string
-        target?: string
-        form?: string
-        class?: string
-      }
-    }
-  }
-}
-
-export const RLButton = forwardRef<HTMLElement, RLButtonProps>(
+export const RLButton = forwardRef<SlButtonElement, RLButtonProps>(
   (
     {
       variant = 'default',
@@ -51,21 +29,21 @@ export const RLButton = forwardRef<HTMLElement, RLButtonProps>(
     ref
   ) => {
     return (
-      <sl-button
+      <SlButton
         ref={ref}
-        class={className}
+        className={className}
         variant={variant}
         size={size}
-        caret={caret || undefined}
-        disabled={disabled || undefined}
-        loading={loading || undefined}
-        outline={outline || undefined}
-        pill={pill || undefined}
-        circle={circle || undefined}
+        caret={caret}
+        disabled={disabled}
+        loading={loading}
+        outline={outline}
+        pill={pill}
+        circle={circle}
         type={type}
-        name={name || undefined}
+        name={name}
         value={value}
-        href={href || undefined}
+        href={href}
         target={target}
         form={form}
         onClick={onClick}
@@ -73,7 +51,7 @@ export const RLButton = forwardRef<HTMLElement, RLButtonProps>(
         {prefix && <span slot="prefix">{prefix}</span>}
         {children}
         {suffix && <span slot="suffix">{suffix}</span>}
-      </sl-button>
+      </SlButton>
     )
   }
 )

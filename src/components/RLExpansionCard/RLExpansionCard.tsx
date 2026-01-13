@@ -1,21 +1,8 @@
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
+import SlDetails from '@shoelace-style/shoelace/dist/react/details/index.js'
+import type SlDetailsElement from '@shoelace-style/shoelace/dist/components/details/details.js'
 import type { RLExpansionCardProps, RLExpansionCardRef } from './types'
-import type { SlAfterShowEvent, SlHideEvent, SlShowEvent, SlAfterHideEvent } from '../utils/types'
 import { RLIcon } from '../RLIcon'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-details': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        open?: boolean
-        onSlShow?: (event: Event) => void
-        onSlHide?: (event: Event) => void
-        onSlAfterShow?: (event: Event) => void
-        onSlAfterHide?: (event: Event) => void
-      }
-    }
-  }
-}
 
 export const RLExpansionCard = forwardRef<RLExpansionCardRef, RLExpansionCardProps>(
   (
@@ -36,7 +23,7 @@ export const RLExpansionCard = forwardRef<RLExpansionCardRef, RLExpansionCardPro
     },
     ref
   ) => {
-    const detailsRef = useRef<HTMLElement & { show: () => void; hide: () => void }>(null)
+    const detailsRef = useRef<SlDetailsElement>(null)
 
     useImperativeHandle(ref, () => ({
       show: () => detailsRef.current?.show(),
@@ -44,44 +31,40 @@ export const RLExpansionCard = forwardRef<RLExpansionCardRef, RLExpansionCardPro
     }))
 
     const handleShow = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlShowEvent
+      (event: CustomEvent) => {
         onOpenChange?.(true)
-        onShow?.(evt)
+        onShow?.(event)
       },
       [onOpenChange, onShow]
     )
 
     const handleHide = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlHideEvent
+      (event: CustomEvent) => {
         onOpenChange?.(false)
-        onHide?.(evt)
+        onHide?.(event)
       },
       [onOpenChange, onHide]
     )
 
     const handleAfterShow = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlAfterShowEvent
-        onAfterShow?.(evt)
+      (event: CustomEvent) => {
+        onAfterShow?.(event)
       },
       [onAfterShow]
     )
 
     const handleAfterHide = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlAfterHideEvent
-        onAfterHide?.(evt)
+      (event: CustomEvent) => {
+        onAfterHide?.(event)
       },
       [onAfterHide]
     )
 
     return (
-      <sl-details
+      <SlDetails
         ref={detailsRef}
         className={className}
-        open={open || undefined}
+        open={open}
         onSlShow={handleShow}
         onSlHide={handleHide}
         onSlAfterShow={handleAfterShow}
@@ -98,7 +81,7 @@ export const RLExpansionCard = forwardRef<RLExpansionCardRef, RLExpansionCardPro
           {collapseIcon || <RLIcon className="text-3xl" name="chevronRight" />}
         </div>
         {children}
-      </sl-details>
+      </SlDetails>
     )
   }
 )

@@ -1,32 +1,9 @@
-import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import { forwardRef, useImperativeHandle, useCallback, useEffect, useRef } from 'react'
+import SlCheckbox from '@shoelace-style/shoelace/dist/react/checkbox/index.js'
+import type SlCheckboxElement from '@shoelace-style/shoelace/dist/components/checkbox/checkbox.js'
 import type { RLCheckboxProps, RLCheckboxRef } from './types'
-import type { SlInputEvent } from '../utils/types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-checkbox': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        name?: string
-        value?: boolean
-        size?: string
-        disabled?: boolean
-        checked?: boolean
-        indeterminate?: boolean
-        defaultChecked?: boolean
-        form?: string
-        required?: boolean
-        class?: string
-        onSlInput?: (event: Event) => void
-        onSlChange?: (event: Event) => void
-        onSlBlur?: (event: Event) => void
-        onSlFocus?: (event: Event) => void
-        onSlInvalid?: (event: Event) => void
-      }
-    }
-  }
-}
 
 export const RLCheckbox = forwardRef<RLCheckboxRef, RLCheckboxProps>(
   (
@@ -52,6 +29,13 @@ export const RLCheckbox = forwardRef<RLCheckboxRef, RLCheckboxProps>(
     ref
   ) => {
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
+    const checkboxRef = useRef<SlCheckboxElement>(null)
+    
+    useEffect(() => {
+      if (checkboxRef.current && checked !== undefined && checkboxRef.current.checked !== checked) {
+        checkboxRef.current.checked = checked
+      }
+    }, [checked])
 
     useEffect(() => {
       if (checked !== undefined) {
@@ -64,59 +48,61 @@ export const RLCheckbox = forwardRef<RLCheckboxRef, RLCheckboxProps>(
       validate: () => validate(checked)
     }))
 
-    const handleInput = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlInputEvent
-        const target = evt.target as HTMLInputElement & { checked: boolean }
-        onChange?.(target?.checked ?? false)
-        onInput?.(evt)
+    const handleChange = useCallback(
+      (event: CustomEvent) => {
+        const target = event.target as SlCheckboxElement
+        const newChecked = target?.checked ?? false
+        validate(newChecked)
+        onChange?.(newChecked)
+        onSlChange?.(event)
       },
-      [onChange, onInput]
+      [onChange, onSlChange, validate]
     )
 
-    const handleChange = useCallback(
-      (event: Event) => {
-        onSlChange?.(event as unknown as Parameters<NonNullable<typeof onSlChange>>[0])
+    const handleInput = useCallback(
+      (event: CustomEvent) => {
+        onInput?.(event)
       },
-      [onSlChange]
+      [onInput]
     )
 
     const handleBlur = useCallback(
-      (event: Event) => {
-        onBlur?.(event as unknown as Parameters<NonNullable<typeof onBlur>>[0])
+      (event: CustomEvent) => {
+        onBlur?.(event)
       },
       [onBlur]
     )
 
     const handleFocus = useCallback(
-      (event: Event) => {
-        onFocus?.(event as unknown as Parameters<NonNullable<typeof onFocus>>[0])
+      (event: CustomEvent) => {
+        onFocus?.(event)
       },
       [onFocus]
     )
 
     const handleInvalid = useCallback(
-      (event: Event) => {
-        onInvalid?.(event as unknown as Parameters<NonNullable<typeof onInvalid>>[0])
+      (event: CustomEvent) => {
+        onInvalid?.(event)
       },
       [onInvalid]
     )
 
+    const combinedClassName = `flex items-center ${errorMessage ? 'error' : ''}`
+
     return (
       <div className="relative">
-        <sl-checkbox
-          class={`flex items-center ${errorMessage ? 'error' : ''}`}
-          value={checked}
-          name={name || undefined}
+        <SlCheckbox
+          ref={checkboxRef}
+          className={combinedClassName}
+          name={name}
           size={size}
-          disabled={disabled || undefined}
-          checked={checked || undefined}
-          indeterminate={indeterminate || undefined}
-          defaultChecked={defaultChecked || undefined}
-          form={form || undefined}
-          required={required || undefined}
-          onSlInput={handleInput}
+          disabled={disabled}
+          defaultChecked={checked ?? defaultChecked}
+          indeterminate={indeterminate}
+          form={form}
+          required={required}
           onSlChange={handleChange}
+          onSlInput={handleInput}
           onSlBlur={handleBlur}
           onSlFocus={handleFocus}
           onSlInvalid={handleInvalid}
@@ -126,7 +112,7 @@ export const RLCheckbox = forwardRef<RLCheckboxRef, RLCheckboxProps>(
               {label}
             </span>
           )}
-        </sl-checkbox>
+        </SlCheckbox>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>
     )
