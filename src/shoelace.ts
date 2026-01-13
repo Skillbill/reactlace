@@ -8,7 +8,7 @@ import type {
 const SHOELACE_ICONS_LIBRARY = 'shoelace'
 const MDI_ICONS_LIBRARY = 'mdi'
 
-export const useIcons = (library: string = 'mdi') => {
+export const initializeIcons = (library: string = 'mdi') => {
   if (library === SHOELACE_ICONS_LIBRARY) {
     shoelace.setBasePath('../node_modules/@shoelace-style/shoelace/dist')
   } else if (library === MDI_ICONS_LIBRARY) {
@@ -16,6 +16,8 @@ export const useIcons = (library: string = 'mdi') => {
     overrideSystemWithMdi()
   }
 }
+
+export const useIcons = initializeIcons
 
 export const registerIconLibrary = (
   library: string,

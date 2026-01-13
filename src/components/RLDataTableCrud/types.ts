@@ -1,4 +1,4 @@
-import type { ReactNode, ComponentType, CSSProperties } from 'react'
+import type { ReactNode, ComponentType } from 'react'
 import type { DataTablePageEvent } from 'primereact/datatable'
 import type { ColumnProps } from 'primereact/column'
 
@@ -21,9 +21,10 @@ export interface RLAction {
 export interface RLDataTableCrudProps {
   columns: RLColumn[]
   actions?: RLAction[]
-  items: unknown[]
+  items: Record<string, unknown>[]
   selection?: unknown[]
   onSelectionChange?: (selection: unknown[]) => void
+  className?: string
   size?: 'small' | 'large'
   stripedRows?: boolean
   removableSort?: boolean
@@ -31,8 +32,7 @@ export interface RLDataTableCrudProps {
   lazy?: boolean
   defaultRows?: number
   rowsPerPageOptions?: number[]
-  rowClass?: (data: unknown) => string | object | (string | object)[] | undefined
-  rowStyle?: (data: unknown) => CSSProperties | undefined
+  rowClassName?: (data: unknown) => string | undefined
   totalRecords?: number
   paginator?: boolean
   paginatorPosition?: 'both' | 'top' | 'bottom'

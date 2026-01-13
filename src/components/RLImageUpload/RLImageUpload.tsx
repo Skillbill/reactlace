@@ -79,11 +79,13 @@ export const RLImageUpload = forwardRef<RLImageUploadRef, RLImageUploadProps>(
                 style={{ backgroundImage: `url(${value})` }}
               />
             </div>
-            <RLIcon
-              className={`text-2xl hover:opacity-40 ${disabled ? 'opacity-40' : ''}`}
-              name="delete"
-              onClick={clear}
-            />
+            {clearable && (
+              <RLIcon
+                className={`text-2xl hover:opacity-40 ${disabled ? 'opacity-40' : ''}`}
+                name="delete"
+                onClick={clear}
+              />
+            )}
           </div>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         </div>

@@ -97,6 +97,10 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
       [fields]
     )
 
+    const closeDialog = useCallback(() => {
+      onClose?.()
+    }, [onClose])
+
     const handleConfirm = useCallback(
       (e: React.FormEvent) => {
         e.preventDefault()
@@ -117,17 +121,13 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
           closeDialog()
         }
       },
-      [fields, isVisible, model, onConfirm, validateAll]
+      [fields, isVisible, model, onConfirm, validateAll, closeDialog]
     )
 
     const handleCancel = useCallback(() => {
       onCancel?.()
       closeDialog()
-    }, [onCancel])
-
-    const closeDialog = useCallback(() => {
-      onClose?.()
-    }, [onClose])
+    }, [onCancel, closeDialog])
 
     useImperativeHandle(ref, () => ({
       validate: () => {

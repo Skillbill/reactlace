@@ -14,6 +14,7 @@ export interface RLDialogProps {
   label?: string
   noHeader?: boolean
   noCloseOnOutsideClick?: boolean
+  className?: string
   onShow?: (evt: SlShowEvent) => void
   onAfterShow?: (evt: SlAfterShowEvent) => void
   onHide?: (evt: SlHideEvent) => void

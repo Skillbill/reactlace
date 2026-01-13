@@ -10,6 +10,12 @@ declare global {
         open?: boolean
         noHeader?: boolean
         class?: string
+        onSlShow?: (event: Event) => void
+        onSlAfterShow?: (event: Event) => void
+        onSlHide?: (event: Event) => void
+        onSlAfterHide?: (event: Event) => void
+        onSlInitialFocus?: (event: Event) => void
+        onSlRequestClose?: (event: Event) => void
       }
     }
   }
@@ -23,6 +29,7 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
       label,
       noHeader,
       noCloseOnOutsideClick,
+      className,
       onShow,
       onAfterShow,
       onHide,
@@ -33,7 +40,7 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
     },
     ref
   ) => {
-    const dialogRef = useRef<HTMLElement & { show: () => void; hide: () => void }>(null)
+    const dialogRef = useRef<HTMLElement & { open: boolean; show: () => void; hide: () => void }>(null)
 
     useImperativeHandle(ref, () => ({
       open: dialogRef.current?.open,
@@ -93,7 +100,7 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
     return (
       <sl-dialog
         ref={dialogRef}
-        class="dialog"
+        class={className ?? 'dialog'}
         label={label}
         open={open || undefined}
         noHeader={noHeader || undefined}

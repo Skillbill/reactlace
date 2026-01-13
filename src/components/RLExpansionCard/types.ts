@@ -5,6 +5,7 @@ export interface RLExpansionCardProps {
   title?: string
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  className?: string
   onShow?: (evt: SlShowEvent) => void
   onHide?: (evt: SlHideEvent) => void
   onAfterShow?: (evt: SlAfterShowEvent) => void

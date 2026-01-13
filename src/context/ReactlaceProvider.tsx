@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, type ReactNode } from 'react'
-import { useIcons } from '../shoelace'
+import { initializeIcons } from '../shoelace'
 
 interface ReactlaceContextValue {
   initialized: boolean
@@ -14,7 +14,7 @@ export interface ReactlaceProviderProps {
 
 export function ReactlaceProvider({ children, iconLibrary = 'mdi' }: ReactlaceProviderProps) {
   useEffect(() => {
-    useIcons(iconLibrary)
+    initializeIcons(iconLibrary)
   }, [iconLibrary])
 
   return (

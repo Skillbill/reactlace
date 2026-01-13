@@ -17,6 +17,7 @@ export interface RLCrudFiltersProps {
   filters: RLCrudFilterType[]
   applyLabel?: string
   resetLabel?: string
+  className?: string
   onApply?: () => void
   onHide?: () => void
   onReset?: () => void

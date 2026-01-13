@@ -128,6 +128,7 @@ export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
             class={`date-input ${errorMessage ? 'error' : ''}`}
             onClick={handleInputClick}
             value={formattedValue}
+            name={name || undefined}
             label={label || undefined}
             disabled={disabled || undefined}
             required={required || undefined}

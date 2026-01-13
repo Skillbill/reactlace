@@ -85,7 +85,7 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
 
         // Update input display if value was clamped
         if (inputRef.current && validValue !== null) {
-          ;(inputRef.current as unknown as HTMLInputElement).value = validValue.toString()
+          (inputRef.current as unknown as HTMLInputElement).value = validValue.toString()
         }
       },
       [checkMinMax, onChange, onSlChange]

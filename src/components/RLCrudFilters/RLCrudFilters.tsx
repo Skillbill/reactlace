@@ -12,6 +12,7 @@ export const RLCrudFilters = forwardRef<RLCrudFiltersRef, RLCrudFiltersProps>(
       filters,
       applyLabel = 'apply',
       resetLabel = 'reset',
+      className,
       onApply,
       onHide,
       onReset,
@@ -105,6 +106,7 @@ export const RLCrudFilters = forwardRef<RLCrudFiltersRef, RLCrudFiltersProps>(
       <RLExpansionCard
         ref={expansionCardRef}
         title={title}
+        className={className}
         onHide={handleHide}
         onShow={handleShow}
         onKeyUp={handleKeyUp}

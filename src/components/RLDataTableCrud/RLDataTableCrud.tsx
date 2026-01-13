@@ -3,7 +3,7 @@ import { DataTable, DataTablePageEvent, DataTableSelectionMultipleChangeEvent, D
 import { Column } from 'primereact/column'
 import type { RLDataTableCrudProps, RLColumn, RLAction } from './types'
 
-export const RLDataTableCrud = forwardRef<DataTable<unknown[]>, RLDataTableCrudProps>(
+export const RLDataTableCrud = forwardRef<DataTable<any[]>, RLDataTableCrudProps>(
   (
     {
       columns,
@@ -11,6 +11,7 @@ export const RLDataTableCrud = forwardRef<DataTable<unknown[]>, RLDataTableCrudP
       items,
       selection,
       onSelectionChange,
+      className,
       size,
       stripedRows = false,
       removableSort = false,
@@ -18,8 +19,7 @@ export const RLDataTableCrud = forwardRef<DataTable<unknown[]>, RLDataTableCrudP
       lazy = false,
       defaultRows = 10,
       rowsPerPageOptions = [5, 10, 20],
-      rowClass,
-      rowStyle,
+      rowClassName,
       totalRecords,
       paginator = true,
       paginatorPosition,
@@ -35,7 +35,7 @@ export const RLDataTableCrud = forwardRef<DataTable<unknown[]>, RLDataTableCrudP
     ref
   ) => {
     const handleSelectionChange = useCallback(
-      (e: DataTableSelectionMultipleChangeEvent<unknown[]> | DataTableSelectionSingleChangeEvent<unknown[]>) => {
+      (e: DataTableSelectionMultipleChangeEvent<any[]> | DataTableSelectionSingleChangeEvent<any[]>) => {
         if (Array.isArray(e.value)) {
           onSelectionChange?.(e.value)
         } else if (e.value) {
@@ -93,6 +93,7 @@ export const RLDataTableCrud = forwardRef<DataTable<unknown[]>, RLDataTableCrudP
     return (
       <DataTable
         ref={ref}
+        className={className}
         value={items}
         selection={selection}
         onSelectionChange={handleSelectionChange}
@@ -103,8 +104,7 @@ export const RLDataTableCrud = forwardRef<DataTable<unknown[]>, RLDataTableCrudP
         lazy={lazy}
         rows={defaultRows}
         rowsPerPageOptions={rowsPerPageOptions}
-        rowClassName={rowClass}
-        rowStyle={rowStyle}
+        rowClassName={rowClassName}
         totalRecords={totalRecords ?? items.length}
         paginator={paginator}
         paginatorPosition={paginatorPosition}
@@ -113,6 +113,7 @@ export const RLDataTableCrud = forwardRef<DataTable<unknown[]>, RLDataTableCrudP
         onPage={handlePage}
         emptyMessage={emptySlot}
         selectionMode={selectionMode as 'single' | 'multiple' | 'checkbox' | 'radiobutton' | null | undefined}
+        cellSelection={false}
       >
         {selectionMode && (
           <Column
