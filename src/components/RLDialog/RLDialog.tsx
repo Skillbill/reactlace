@@ -84,7 +84,7 @@ export const RLDialog = forwardRef<RLDialogRef, RLDialogProps>(
       <SlDialog
         ref={dialogRef}
         className={className ?? 'dialog'}
-        label={label}
+        label={label ?? ''}
         open={open}
         noHeader={noHeader}
         onSlShow={handleShow}

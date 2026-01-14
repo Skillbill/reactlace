@@ -46,8 +46,7 @@ export const RLCrudFilters = forwardRef<RLCrudFiltersRef, RLCrudFiltersProps>(
 
     // Initialize on mount
     useEffect(() => {
-      const initialFilters = resetFields()
-      onFiltersApplied?.(initialFilters)
+      resetFields()
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleApply = useCallback(() => {
