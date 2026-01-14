@@ -1,0 +1,5 @@
+import{o as r}from"./RLCrud-BCJRpfNT.js";import"./iframe-Bjw0nMSr.js";import"./preload-helper-C1FmrZbK.js";import"./index-DbCjbJ06.js";const n={title:"Components/Select",component:r,tags:["autodocs"],argTypes:{size:{control:"select",options:["small","medium","large",void 0]},placement:{control:"select",options:["top","bottom",void 0]}},args:{label:"Favorite music genres (RLSelect)",placeholder:"Select your favorite music genre...",options:[{value:"dance",text:"Dance"},{value:"rock",text:"Rock"},{value:"pop",text:"Pop"},{value:"indie",text:"Indie"},{value:"classic",text:"Classic"},{value:"country",text:"Country"},{value:"jazz",text:"Jazz"},{value:"others",text:"Others..."}]}},e={args:{multiple:!0}};var t,o,a;e.parameters={...e.parameters,docs:{...(t=e.parameters)==null?void 0:t.docs,source:{originalSource:`{
+  args: {
+    multiple: true
+  }
+}`,...(a=(o=e.parameters)==null?void 0:o.docs)==null?void 0:a.source}}};const p=["Multiple"];export{e as Multiple,p as __namedExportsOrder,n as default};
