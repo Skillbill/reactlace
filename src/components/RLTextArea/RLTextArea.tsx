@@ -1,37 +1,9 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import SlTextarea from '@shoelace-style/shoelace/dist/react/textarea/index.js'
+import type SlTextareaElement from '@shoelace-style/shoelace/dist/components/textarea/textarea.js'
 import type { RLTextAreaProps, RLTextAreaRef } from './types'
-import type { SlChangeEvent } from '../utils/types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-textarea': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        name?: string
-        value?: string
-        defaultValue?: string
-        size?: string
-        filled?: boolean
-        label?: string
-        'help-text'?: string
-        rows?: number
-        resize?: string
-        disabled?: boolean
-        placeholder?: string
-        readonly?: boolean
-        form?: string
-        required?: boolean
-        autocapitalize?: string
-        autocorrect?: string
-        autofocus?: boolean
-        spellcheck?: boolean
-        inputmode?: string
-        class?: string
-      }
-    }
-  }
-}
 
 export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
   (
@@ -80,72 +52,74 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
     }))
 
     const handleChange = useCallback(
-      (event: Event) => {
-        const evt = event as unknown as SlChangeEvent
-        const target = evt.target as HTMLTextAreaElement
+      (event: CustomEvent) => {
+        const target = event.target as SlTextareaElement
         const newValue = target?.value ?? ''
+        validate(newValue)
         onChange?.(newValue)
-        onSlChange?.(evt)
+        onSlChange?.(event)
       },
-      [onChange, onSlChange]
+      [onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
-      (event: Event) => {
-        onBlur?.(event as unknown as Parameters<NonNullable<typeof onBlur>>[0])
+      (event: CustomEvent) => {
+        onBlur?.(event)
       },
       [onBlur]
     )
 
     const handleFocus = useCallback(
-      (event: Event) => {
-        onFocus?.(event as unknown as Parameters<NonNullable<typeof onFocus>>[0])
+      (event: CustomEvent) => {
+        onFocus?.(event)
       },
       [onFocus]
     )
 
     const handleInput = useCallback(
-      (event: Event) => {
-        onInput?.(event as unknown as Parameters<NonNullable<typeof onInput>>[0])
+      (event: CustomEvent) => {
+        onInput?.(event)
       },
       [onInput]
     )
 
     const handleInvalid = useCallback(
-      (event: Event) => {
-        onInvalid?.(event as unknown as Parameters<NonNullable<typeof onInvalid>>[0])
+      (event: CustomEvent) => {
+        onInvalid?.(event)
       },
       [onInvalid]
     )
 
+    const combinedClassName = errorMessage ? 'error' : undefined
+
     return (
       <div className="relative">
-        <sl-textarea
-          class={errorMessage ? 'error' : undefined}
-          value={value}
-          name={name || undefined}
-          defaultValue={defaultValue || undefined}
+        <SlTextarea
+          className={combinedClassName}
+          value={value ?? ''}
+          name={name}
+          defaultValue={defaultValue}
           size={size}
-          filled={filled || undefined}
-          label={label || undefined}
-          help-text={helpText || undefined}
+          filled={filled}
+          label={label}
+          helpText={helpText}
           rows={rows}
           resize={resize}
-          disabled={disabled || undefined}
-          placeholder={placeholder || undefined}
-          readonly={readonly || undefined}
+          disabled={disabled}
+          placeholder={placeholder}
+          readonly={readonly}
           form={form}
-          required={required || undefined}
-          autocapitalize={autocapitalize}
-          autocorrect={autocorrect}
-          autofocus={autofocus || undefined}
-          spellcheck={spellcheck}
+          required={required}
+          autoCapitalize={autocapitalize}
+          autoCorrect={autocorrect}
+          autoFocus={autofocus}
+          spellCheck={spellcheck}
           inputmode={inputmode}
-          onsl-change={handleChange}
-          onsl-blur={handleBlur}
-          onsl-focus={handleFocus}
-          onsl-input={handleInput}
-          onsl-invalid={handleInvalid}
+          onSlChange={handleChange}
+          onSlBlur={handleBlur}
+          onSlFocus={handleFocus}
+          onSlInput={handleInput}
+          onSlInvalid={handleInvalid}
         />
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>

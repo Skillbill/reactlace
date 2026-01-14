@@ -1,29 +1,11 @@
 import { forwardRef, useCallback, useRef, useEffect } from 'react'
+import SlDropdown from '@shoelace-style/shoelace/dist/react/dropdown/index.js'
+import SlColorPicker from '@shoelace-style/shoelace/dist/react/color-picker/index.js'
+import SlButton from '@shoelace-style/shoelace/dist/react/button/index.js'
+import type SlColorPickerElement from '@shoelace-style/shoelace/dist/components/color-picker/color-picker.js'
 import type { RLColorPickerProps } from './types'
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-dropdown': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        hoist?: boolean
-        open?: boolean
-      }
-      'sl-color-picker': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        hoist?: boolean
-        inline?: boolean
-        noFormatToggle?: boolean
-        opacity?: boolean
-        value?: string
-        name?: string
-        defaultValue?: string
-        required?: boolean
-        disabled?: boolean
-      }
-    }
-  }
-}
-
-export const RLColorPicker = forwardRef<HTMLElement, RLColorPickerProps>(
+export const RLColorPicker = forwardRef<SlColorPickerElement, RLColorPickerProps>(
   (
     {
       value = '#000000',
@@ -39,7 +21,6 @@ export const RLColorPicker = forwardRef<HTMLElement, RLColorPickerProps>(
     ref
   ) => {
     const colorPreviewRef = useRef<HTMLDivElement>(null)
-    const slColorPickerRef = useRef<HTMLElement>(null)
 
     useEffect(() => {
       if (colorPreviewRef.current && value) {
@@ -48,46 +29,46 @@ export const RLColorPicker = forwardRef<HTMLElement, RLColorPickerProps>(
     }, [value])
 
     const handleChange = useCallback(
-      (event: Event) => {
-        const target = event.target as HTMLInputElement
+      (event: CustomEvent) => {
+        const target = event.target as SlColorPickerElement
         onChange?.(target?.value ?? '')
       },
       [onChange]
     )
 
-    const handleShow = useCallback((event: Event) => {
+    const handleShow = useCallback((event: CustomEvent) => {
       event.stopPropagation()
     }, [])
 
-    const handleHide = useCallback((event: Event) => {
+    const handleHide = useCallback((event: CustomEvent) => {
       event.stopPropagation()
     }, [])
 
     return (
-      <sl-dropdown ref={ref} hoist onsl-show={handleShow} onsl-hide={handleHide}>
+      <SlDropdown hoist onSlShow={handleShow} onSlHide={handleHide}>
         <div className={className} slot="trigger">
           <div className="w-full">{label}</div>
-          <sl-button class="w-full" caret disabled={disabled || undefined}>
+          <SlButton className="w-full" caret disabled={disabled}>
             <div className="flex items-center gap-4">
               {value && <div ref={colorPreviewRef} className="w-6 h-6 rounded-full" />}
               {value}
             </div>
-          </sl-button>
+          </SlButton>
         </div>
-        <sl-color-picker
-          ref={slColorPickerRef}
+        <SlColorPicker
+          ref={ref}
           hoist
           inline
           noFormatToggle
-          opacity={opacity || undefined}
+          opacity={opacity}
           value={value}
-          name={name || undefined}
-          defaultValue={defaultValue || undefined}
-          required={required || undefined}
-          disabled={disabled || undefined}
-          onsl-change={handleChange}
+          name={name}
+          defaultValue={defaultValue}
+          required={required}
+          disabled={disabled}
+          onSlChange={handleChange}
         />
-      </sl-dropdown>
+      </SlDropdown>
     )
   }
 )

@@ -1,29 +1,10 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import SlRadioGroup from '@shoelace-style/shoelace/dist/react/radio-group/index.js'
+import SlRadio from '@shoelace-style/shoelace/dist/react/radio/index.js'
+import type SlRadioGroupElement from '@shoelace-style/shoelace/dist/components/radio-group/radio-group.js'
 import type { RLRadioGroupProps, RLRadioGroupRef } from './types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-radio-group': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        value?: string
-        label?: string
-        helpText?: string
-        name?: string
-        size?: string
-        form?: string
-        required?: boolean
-        class?: string
-      }
-      'sl-radio': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        value?: string
-        disabled?: boolean
-        class?: string
-      }
-    }
-  }
-}
 
 export const RLRadioGroup = forwardRef<RLRadioGroupRef, RLRadioGroupProps>(
   (
@@ -60,55 +41,59 @@ export const RLRadioGroup = forwardRef<RLRadioGroupRef, RLRadioGroupProps>(
     }))
 
     const handleChange = useCallback(
-      (event: Event) => {
-        const target = event.target as HTMLInputElement
-        onChange?.(target?.value ?? '')
-        onSlChange?.(event as unknown as Parameters<NonNullable<typeof onSlChange>>[0])
+      (event: CustomEvent) => {
+        const target = event.target as SlRadioGroupElement
+        const newValue = target?.value ?? ''
+        validate(newValue)
+        onChange?.(newValue)
+        onSlChange?.(event)
       },
-      [onChange, onSlChange]
+      [onChange, onSlChange, validate]
     )
 
     const handleInput = useCallback(
-      (event: Event) => {
-        onInput?.(event as unknown as Parameters<NonNullable<typeof onInput>>[0])
+      (event: CustomEvent) => {
+        onInput?.(event)
       },
       [onInput]
     )
 
     const handleInvalid = useCallback(
-      (event: Event) => {
-        onInvalid?.(event as unknown as Parameters<NonNullable<typeof onInvalid>>[0])
+      (event: CustomEvent) => {
+        onInvalid?.(event)
       },
       [onInvalid]
     )
 
+    const combinedClassName = errorMessage ? 'error' : undefined
+
     return (
       <div className="relative">
-        <sl-radio-group
-          class={errorMessage ? 'error' : undefined}
+        <SlRadioGroup
+          className={combinedClassName}
           value={value}
-          label={label || undefined}
-          helpText={helpText || undefined}
-          name={name || undefined}
+          label={label}
+          helpText={helpText}
+          name={name}
           size={size}
-          form={form || undefined}
-          required={required || undefined}
-          onlsl-change={handleChange}
-          onsl-invalid={handleInvalid}
-          onsl-input={handleInput}
+          form={form}
+          required={required}
+          onSlChange={handleChange}
+          onSlInvalid={handleInvalid}
+          onSlInput={handleInput}
         >
           {options.map((radio) => (
-            <sl-radio
+            <SlRadio
               key={radio.value}
-              class={errorMessage ? 'error' : undefined}
+              className={combinedClassName}
               value={radio.value}
-              disabled={radio.disabled || undefined}
+              disabled={radio.disabled}
             >
               {radio.label}
-            </sl-radio>
+            </SlRadio>
           ))}
           {children}
-        </sl-radio-group>
+        </SlRadioGroup>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>
     )

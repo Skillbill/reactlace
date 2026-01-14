@@ -1,24 +1,9 @@
-import { forwardRef } from 'react'
+import { forwardRef, isValidElement } from 'react'
+import SlTooltip from '@shoelace-style/shoelace/dist/react/tooltip/index.js'
+import type SlTooltipElement from '@shoelace-style/shoelace/dist/components/tooltip/tooltip.js'
 import type { RLTooltipProps } from './types'
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'sl-tooltip': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        content?: string
-        placement?: string
-        disabled?: boolean
-        distance?: number
-        open?: boolean
-        skidding?: number
-        trigger?: string
-        hoist?: boolean
-      }
-    }
-  }
-}
-
-export const RLTooltip = forwardRef<HTMLElement, RLTooltipProps>(
+export const RLTooltip = forwardRef<SlTooltipElement, RLTooltipProps>(
   (
     {
       content,
@@ -33,20 +18,22 @@ export const RLTooltip = forwardRef<HTMLElement, RLTooltipProps>(
     },
     ref
   ) => {
+    const wrappedChildren = isValidElement(children) ? children : <span>{children}</span>
+
     return (
-      <sl-tooltip
+      <SlTooltip
         ref={ref}
         content={content}
         placement={placement}
-        disabled={disabled || undefined}
+        disabled={disabled}
         distance={distance}
-        open={open || undefined}
+        open={open}
         skidding={skidding}
         trigger={trigger}
-        hoist={hoist || undefined}
+        hoist={hoist}
       >
-        {children}
-      </sl-tooltip>
+        {wrappedChildren}
+      </SlTooltip>
     )
   }
 )
