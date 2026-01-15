@@ -8,6 +8,7 @@ import { useValidation } from '../../hooks/useValidation'
 export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
   (
     {
+      className,
       value,
       onChange,
       name,
@@ -93,7 +94,7 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
     const combinedClassName = errorMessage ? 'error' : undefined
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         <SlTextarea
           className={combinedClassName}
           value={value ?? ''}

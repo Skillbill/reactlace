@@ -8,6 +8,7 @@ import { useValidation } from '../../hooks/useValidation'
 export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
   (
     {
+      className,
       value,
       onChange,
       name,
@@ -124,7 +125,7 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
     )
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         <SlInput
           className={errorMessage ? 'error' : undefined}
           type="number"

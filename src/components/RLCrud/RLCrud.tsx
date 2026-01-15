@@ -17,6 +17,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
   (
     {
       id,
+      className,
       primary_key,
       singular_label,
       headers,
@@ -128,7 +129,6 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
         }
 
         setItems(response.result as Record<string, unknown>[])
-        setCurrentPage(response.page.currentPage)
         setTotalRows(response.page.totalRows)
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -291,7 +291,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
     }))
 
     return (
-      <div>
+      <div className={className}>
         <RLCrudFilters
           ref={filtersRef}
           className="w-full"

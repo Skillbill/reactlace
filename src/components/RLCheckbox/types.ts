@@ -8,6 +8,7 @@ import type {
 } from '../utils/types'
 
 export interface RLCheckboxProps {
+  className?: string
   checked?: boolean
   onChange?: (checked: boolean) => void
   name?: string

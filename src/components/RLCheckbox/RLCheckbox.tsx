@@ -8,6 +8,7 @@ import { useValidation } from '../../hooks/useValidation'
 export const RLCheckbox = forwardRef<RLCheckboxRef, RLCheckboxProps>(
   (
     {
+      className,
       checked,
       onChange,
       name,
@@ -90,7 +91,7 @@ export const RLCheckbox = forwardRef<RLCheckboxRef, RLCheckboxProps>(
     const combinedClassName = `flex items-center ${errorMessage ? 'error' : ''}`
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         <SlCheckbox
           ref={checkboxRef}
           className={combinedClassName}

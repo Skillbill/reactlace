@@ -9,6 +9,7 @@ import { useValidation } from '../../hooks/useValidation'
 export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>(
   (
     {
+      className,
       value,
       onChange,
       options = [],
@@ -137,7 +138,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
     )}
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         <label
           className={`block mb-[2px] ${errorMessage ? 'error' : ''} ${labelClassName || ''}`}
           style={errorMessage ? { color: 'var(--sl-color-danger-500)' } : undefined}

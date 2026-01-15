@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 export interface RLPaginatorProps {
+  className?: string
   page?: number
   onPageChange?: (page: number) => void
   totalRows: number

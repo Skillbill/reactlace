@@ -39,6 +39,7 @@ export interface RLCrudProps {
   id: string
   primary_key: string
   singular_label: string
+  className?: string
   headers: RLCrudHeaderType[]
   filters: Omit<RLCrudFilterType, 'label'>[]
   filters_title?: string

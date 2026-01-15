@@ -11,6 +11,7 @@ import { RLInput } from '../RLInput'
 export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
   (
     {
+      className,
       value,
       onChange,
       name,
@@ -114,7 +115,7 @@ export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
     }, [])
 
     return (
-      <SlDropdown open={isDropdownOpen || undefined} hoist onSlShow={handleShow} onSlHide={handleHide}>
+      <SlDropdown className={className} open={isDropdownOpen || undefined} hoist onSlShow={handleShow} onSlHide={handleHide}>
         <div className="relative" slot="trigger">
           <RLInput
             className={`date-input ${errorMessage ? 'error' : ''}`}
