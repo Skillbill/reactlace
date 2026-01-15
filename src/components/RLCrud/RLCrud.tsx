@@ -64,7 +64,15 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
         : rowsPerPageOptions[0]
     )
     const [totalRows, setTotalRows] = useState(0)
-    const [filtersApplied, setFiltersApplied] = useState<Record<string, unknown>>({})
+    const [filtersApplied, setFiltersApplied] = useState<Record<string, unknown>>(() =>
+      filtersConfig.reduce(
+        (acc, filter) => ({
+          ...acc,
+          [filter.value]: filter.default_value
+        }),
+        {}
+      )
+    )
     const [showDialog, setShowDialog] = useState(false)
     const [dialog, setDialog] = useState<string | null>(null)
     const [dialogProps, setDialogProps] = useState<Record<string, unknown>>({})
@@ -169,7 +177,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
 
     const onFiltersApplied = useCallback((appliedFilters: Record<string, unknown>) => {
       setFiltersApplied(appliedFilters)
-      setCurrentPage(1)
+      setCurrentPage(0)
     }, [])
 
     const onConfirm = useCallback(async () => {
@@ -207,7 +215,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
           setFiltersApplied({ [primary_key]: newId as RLCrudInputValueType })
           filtersRef.current?.setFilterModel({ [primary_key]: newId as RLCrudInputValueType })
           filtersRef.current?.setOpen(true)
-          setCurrentPage(1)
+          setCurrentPage(0)
           await Promise.resolve() // Allow state to update
           skipWatchersRef.current = false
         }
@@ -318,8 +326,8 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
             {bottomContainerSlot}
           </div>
           <RLPaginator
-            page={currentPage}
-            onPageChange={setCurrentPage}
+            page={currentPage + 1}
+            onPageChange={(page) => setCurrentPage(page - 1)}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={setRowsPerPage}
             totalRows={totalRows}
