@@ -26,6 +26,17 @@
 }
 
 /* PrimeReact AutoComplete styling */
+.p-autocomplete {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--sl-input-height-medium);
+  background-color: var(--sl-input-background-color);
+  border: solid var(--sl-input-border-width) var(--sl-input-border-color);
+  border-radius: 0.25rem;
+  color: var(--sl-input-color);
+}
+
 .p-autocomplete-item.p-highlight {
   background: var(--sl-color-primary-600);
   color: var(--sl-color-neutral-0);
@@ -34,6 +45,15 @@
 .p-autocomplete-item.p-focus:not(.p-highlight) {
   background-color: var(--sl-color-neutral-100);
   color: var(--sl-color-neutral-1000);
+}
+.p-autocomplete-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.p-autocomplete:focus-within:not(.p-disabled):not(.error) {
+  border-color: var(--sl-input-border-color-focus);
+  box-shadow: 0 0 0 var(--sl-focus-ring-width) var(--sl-input-focus-ring-color);
 }
 
 body {

@@ -37,6 +37,7 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
   ) => {
     const autocompleteRef = useRef<AutoComplete>(null)
     const [inputModel, setInputModel] = useState<RLSelectOptionType | string | undefined>(undefined)
+    const [suggestions, setSuggestions] = useState<RLSelectOptionType[]>(options)
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
 
     // Sync inputModel with value
@@ -48,6 +49,10 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
         setInputModel(found ?? (!forceSelection ? { value, text: value } : undefined))
       }
     }, [value, options, forceSelection])
+
+    useEffect(() => {
+      setSuggestions(options)
+    }, [options])
 
     useEffect(() => {
       if (value !== undefined) {
@@ -83,33 +88,53 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
     }
 
     const handleClick = (evt: React.MouseEvent) => {
+      setSuggestions(options)
       autocompleteRef.current?.show()
       onClick?.(evt.nativeEvent)
     }
 
     const handleFocus = (evt: React.FocusEvent) => {
+      setSuggestions(options)
       autocompleteRef.current?.show()
       onFocus?.(evt.nativeEvent)
     }
 
     const handleBlur = (evt: React.FocusEvent) => {
+      if (inputModel === null && value) {
+          const selectedOption = options.find(
+            (option) => option.value === value
+          )
+        if (selectedOption) {
+            setInputModel(selectedOption)
+          }
+        }
       onBlur?.(evt.nativeEvent)
     }
 
     const handleComplete = (evt: AutoCompleteCompleteEvent) => {
       if (onComplete) {
         onComplete(evt)
+      } else {
+        const query = (evt.query ?? '').toString().toLowerCase()
+        if (!query) {
+          setSuggestions(options)
+        } else {
+          setSuggestions(options.filter((o) => (o.text ?? '')?.toString().toLowerCase().includes(query)))
+        }
       }
     }
 
-    const optionTemplate = (option: RLSelectOptionType) => (
+    const optionTemplate = (option: RLSelectOptionType) => {
+      const selectedValue = (typeof inputModel === 'object') ? inputModel?.value : undefined
+      
+      return (
       <div className="flex items-center gap-2 min-h-[1lh]">
         <span className="w-4">
-          {value === option.value && <RLIcon className="pt-1" name="check" />}
+          {selectedValue === option.value && <RLIcon className="pt-1" name="check" />}
         </span>
         <span>{option.text}</span>
       </div>
-    )
+    )}
 
     return (
       <div className="relative">
@@ -124,8 +149,9 @@ export const RLAutocomplete = forwardRef<RLAutocompleteRef, RLAutocompleteProps>
           className={errorMessage ? 'error' : ''}
           value={inputModel}
           field="text"
-          suggestions={options}
+          suggestions={suggestions}
           emptyMessage={emptySearchMessage}
+          showEmptyMessage={true}
           placeholder={placeholder}
           disabled={disabled}
           forceSelection={forceSelection}
