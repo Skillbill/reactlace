@@ -12,3 +12,5 @@ export * from './icons'
 
 // Shoelace utilities
 export * from './shoelace'
+
+import './assets/main.css' 
