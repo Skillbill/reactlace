@@ -34,6 +34,7 @@ export interface RLSelectProps {
   pill?: boolean
   filled?: boolean
   placement?: 'top' | 'bottom'
+  hoist?: boolean
   helpText?: string
   label?: string
   options: RLSelectOptionType[]

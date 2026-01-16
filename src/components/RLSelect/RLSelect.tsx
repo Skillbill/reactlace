@@ -24,6 +24,7 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
       pill,
       filled,
       placement = 'bottom',
+      hoist = true,
       helpText,
       label,
       options = [],
@@ -173,7 +174,7 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
       <div className={`relative ${className ?? ''}`}>
         <SlSelect
           className={combinedClassName}
-          hoist
+          hoist={hoist}
           value={templateValue}
           name={name}
           defaultValue={defaultValue}
