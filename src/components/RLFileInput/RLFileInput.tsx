@@ -43,7 +43,7 @@ export const RLFileInput = forwardRef<RLFileInputRef, RLFileInputProps>(
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
 
     useEffect(() => {
-      if (value !== undefined) {
+      if (value != null) {
         validate(value)
       }
     }, [value, validate])
