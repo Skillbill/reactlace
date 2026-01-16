@@ -32,6 +32,7 @@ export interface RLCrudFormFieldType {
 }
 
 export interface RLCrudFormProps {
+  className?: string
   value?: { [key: string]: RLCrudInputValueType }
   type: 'add' | 'edit'
   fields: RLCrudFormFieldType[]

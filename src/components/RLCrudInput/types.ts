@@ -18,6 +18,7 @@ export type RLCrudInputFieldType =
   | 'textarea'
 
 export interface RLCrudInputProps {
+  className?: string
   inputName: string
   label: string
   type: RLCrudInputFieldType

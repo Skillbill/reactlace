@@ -8,6 +8,7 @@ export interface RadioOption {
 }
 
 export interface RLRadioGroupProps {
+  className?: string
   value?: string
   onChange?: (value: string) => void
   label?: string

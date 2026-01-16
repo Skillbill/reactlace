@@ -10,6 +10,7 @@ export interface RLFileInputErrorEvent {
 }
 
 export interface RLFileInputProps {
+  className?: string
   value?: File | File[] | null
   onChange?: (files: File | File[] | null) => void
   name?: string

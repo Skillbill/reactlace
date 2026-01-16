@@ -10,6 +10,7 @@ import { RLIcon } from '../RLIcon'
 export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
   (
     {
+      className,
       value,
       onChange,
       name,
@@ -169,7 +170,7 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
     const combinedClassName = `min-w-full listbox ${errorMessage ? 'error' : ''}`
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         <SlSelect
           className={combinedClassName}
           hoist

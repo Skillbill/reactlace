@@ -7,6 +7,7 @@ import { RLSelect } from '../RLSelect'
 export const RLPaginator = forwardRef<HTMLDivElement, RLPaginatorProps>(
   (
     {
+      className,
       page = 1,
       onPageChange,
       totalRows,
@@ -72,7 +73,7 @@ export const RLPaginator = forwardRef<HTMLDivElement, RLPaginatorProps>(
     )
 
     return (
-      <div ref={ref} className="flex items-center gap-4">
+      <div ref={ref} className={`flex items-center gap-4 ${className ?? ''}`}>
         <RLButton onClick={firstPage} disabled={page === 1}>
           <RLIcon name="pageFirst" />
         </RLButton>

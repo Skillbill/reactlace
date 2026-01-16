@@ -10,6 +10,7 @@ import type {
 } from '../utils/types'
 
 export interface RLNumberInputProps {
+  className?: string
   value?: number | null
   onChange?: (value: number | null) => void
   name?: string

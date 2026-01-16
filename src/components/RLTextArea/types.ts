@@ -8,6 +8,7 @@ import type {
 } from '../utils/types'
 
 export interface RLTextAreaProps {
+  className?: string
   value?: string
   onChange?: (value: string) => void
   name?: string

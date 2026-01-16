@@ -8,6 +8,7 @@ import type { RLInputRuleType } from '../utils/types'
 export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
   (
     {
+      className,
       value,
       type,
       fields: initialFields,
@@ -150,7 +151,7 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
         <div slot="label">{title}</div>
         <form
           name={`${type}-crud-form`}
-          className="flex flex-col gap-8"
+          className={`flex flex-col gap-8 ${className ?? ''}`}
           onSubmit={handleConfirm}
         >
           {Object.values(fields).map((field) => (

@@ -2,6 +2,7 @@ import type { RLSelectOptionType } from '../RLSelect'
 import type { RLInputRuleType, AutoCompleteChangeEvent, AutoCompleteCompleteEvent } from '../utils/types'
 
 export interface RLAutocompleteProps {
+  className?: string
   value?: string
   onChange?: (value: string) => void
   options?: RLSelectOptionType[]

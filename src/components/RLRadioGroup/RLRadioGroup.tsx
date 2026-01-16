@@ -9,6 +9,7 @@ import { useValidation } from '../../hooks/useValidation'
 export const RLRadioGroup = forwardRef<RLRadioGroupRef, RLRadioGroupProps>(
   (
     {
+      className,
       value,
       onChange,
       label,
@@ -68,7 +69,7 @@ export const RLRadioGroup = forwardRef<RLRadioGroupRef, RLRadioGroupProps>(
     const combinedClassName = errorMessage ? 'error' : undefined
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         <SlRadioGroup
           className={combinedClassName}
           value={value}

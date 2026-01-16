@@ -26,6 +26,7 @@ type InputRefType =
 export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
   (
     {
+      className,
       inputName,
       label,
       type,
@@ -56,6 +57,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLInput
             ref={inputRef as React.Ref<RLInputRef>}
+            className={className}
             name={inputName}
             label={label}
             value={value as string}
@@ -71,6 +73,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLTextArea
             ref={inputRef as React.Ref<RLTextAreaRef>}
+            className={className}
             name={inputName}
             label={label}
             value={value as string}
@@ -86,6 +89,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLNumberInput
             ref={inputRef as React.Ref<RLNumberInputRef>}
+            className={className}
             name={inputName}
             label={label}
             value={value as number | null}
@@ -101,6 +105,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLCheckbox
             ref={inputRef as React.Ref<RLCheckboxRef>}
+            className={className}
             name={inputName}
             label={label}
             checked={value as boolean}
@@ -115,6 +120,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLSelect
             ref={inputRef as React.Ref<RLSelectRef>}
+            className={className}
             name={inputName}
             label={label}
             value={value as string | string[] | null}
@@ -131,6 +137,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
       case 'color':
         return (
           <RLColorPicker
+            className={className}
             name={inputName}
             label={label}
             value={value as string}
@@ -144,6 +151,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLImageUpload
             ref={inputRef as React.Ref<RLImageUploadRef>}
+            className={className}
             name={inputName}
             label={label}
             value={value as string | null}
@@ -161,6 +169,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLAutocomplete
             ref={inputRef as React.Ref<RLAutocompleteRef>}
+            className={className}
             label={label}
             value={value as string}
             onChange={(v) => onChange?.(v)}
@@ -177,6 +186,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLDropdown
             ref={inputRef as React.Ref<RLDropdownRef>}
+            className={className}
             name={inputName}
             label={label}
             value={value as string | string[] | null}
@@ -195,6 +205,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
         return (
           <RLDatePicker
             ref={inputRef as React.Ref<RLDatePickerRef>}
+            className={className}
             name={inputName}
             label={label}
             value={value as Date | Date[] | null}

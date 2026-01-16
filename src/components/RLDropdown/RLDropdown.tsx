@@ -17,6 +17,7 @@ import { useValidation } from '../../hooks/useValidation'
 export const RLDropdown = forwardRef<RLDropdownRef, RLDropdownProps>(
   (
     {
+      className,
       value,
       onChange,
       name,
@@ -189,7 +190,7 @@ export const RLDropdown = forwardRef<RLDropdownRef, RLDropdownProps>(
     }
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         {label && (
           <label
             htmlFor={name}

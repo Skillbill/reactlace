@@ -17,6 +17,7 @@ import { useValidation } from '../../hooks/useValidation'
 export const RLFileInput = forwardRef<RLFileInputRef, RLFileInputProps>(
   (
     {
+      className,
       value,
       onChange,
       name,
@@ -154,7 +155,7 @@ export const RLFileInput = forwardRef<RLFileInputRef, RLFileInputProps>(
     )
 
     return (
-      <div className="relative">
+      <div className={`relative ${className ?? ''}`}>
         <label
           htmlFor={name}
           className={`pb-4 ${errorMessage ? 'error' : ''}`}

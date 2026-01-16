@@ -20,6 +20,7 @@ export interface RLSelectOptionType {
 }
 
 export interface RLSelectProps {
+  className?: string
   value?: string | string[] | null
   onChange?: (value: string | string[] | null) => void
   name?: string
