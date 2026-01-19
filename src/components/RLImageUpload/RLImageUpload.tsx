@@ -28,7 +28,7 @@ export const RLImageUpload = forwardRef<RLImageUploadRef, RLImageUploadProps>(
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
 
     useEffect(() => {
-      if (value !== undefined) {
+      if (value != null) {
         validate(value)
       }
     }, [value, validate])
