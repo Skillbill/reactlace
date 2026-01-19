@@ -49,6 +49,15 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
             fieldsMap[fieldKey].side_effect?.(value, fieldsMap)
           }
         })
+      } else {
+        // Apply default values from fields when adding new item
+        const defaultModel: { [key: string]: RLCrudInputValueType } = {}
+        Object.values(fieldsMap).forEach((field) => {
+          if (field.default_value !== undefined) {
+            defaultModel[field.value] = field.default_value
+          }
+        })
+        setModel(defaultModel)
       }
     }, [initialFields, value])
 
