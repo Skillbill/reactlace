@@ -61,15 +61,30 @@ export const RLCrudFilters = forwardRef<RLCrudFiltersRef, RLCrudFiltersProps>(
       onReset?.()
     }, [resetFields, onFiltersApplied, onReset])
 
+    const syncModelWithAppliedFilters = useCallback(() => {
+      setModel((prev) => {
+        const target = currentFiltersStatusRef.current
+        const prevKeys = Object.keys(prev)
+        const targetKeys = Object.keys(target)
+
+        if (prevKeys.length !== targetKeys.length) {
+          return { ...target }
+        }
+
+        const hasChanges = prevKeys.some((key) => prev[key] !== target[key])
+        return hasChanges ? { ...target } : prev
+      })
+    }, [])
+
     const handleShow = useCallback(() => {
-      setModel({ ...currentFiltersStatusRef.current })
+      syncModelWithAppliedFilters()
       onShow?.()
-    }, [onShow])
+    }, [onShow, syncModelWithAppliedFilters])
 
     const handleHide = useCallback(() => {
-      setModel({ ...currentFiltersStatusRef.current })
+      syncModelWithAppliedFilters()
       onHide?.()
-    }, [onHide])
+    }, [onHide, syncModelWithAppliedFilters])
 
     const handleKeyUp = useCallback(
       (e: React.KeyboardEvent) => {
