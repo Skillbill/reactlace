@@ -1,4 +1,11 @@
-import { forwardRef, useImperativeHandle, useCallback, useEffect, useMemo } from 'react'
+import {
+  forwardRef,
+  useImperativeHandle,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef
+} from 'react'
 import SlSelect from '@shoelace-style/shoelace/dist/react/select/index.js'
 import SlOption from '@shoelace-style/shoelace/dist/react/option/index.js'
 import type SlSelectElement from '@shoelace-style/shoelace/dist/components/select/select.js'
@@ -47,6 +54,7 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
     ref
   ) => {
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
+    const selectRef = useRef<SlSelectElement>(null)
 
     // Build dictionary for space handling
     const optionsDict = useMemo(() => {
@@ -62,14 +70,29 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
       if (Array.isArray(value)) {
         return value.map((s) => `${s}`.replaceAll(' ', '_'))
       }
+      if (multiple) {
+        return value ? [`${value}`.replaceAll(' ', '_')] : []
+      }
       return value ? `${value}`.replaceAll(' ', '_') : ''
-    }, [value])
+    }, [value, multiple])
 
     useEffect(() => {
       if (value !== undefined) {
         validate(value)
       }
     }, [value, validate])
+
+    // Sync value to SlSelect after options are rendered (fixes production build timing issue)
+    useEffect(() => {
+      if (selectRef.current && options.length > 0) {
+        // Use requestAnimationFrame to ensure DOM is ready
+        requestAnimationFrame(() => {
+          if (selectRef.current) {
+            selectRef.current.value = templateValue
+          }
+        })
+      }
+    }, [templateValue, options])
 
     useImperativeHandle(ref, () => ({
       isValid: () => isValid,
@@ -173,6 +196,7 @@ export const RLSelect = forwardRef<RLSelectRef, RLSelectProps>(
     return (
       <div className={`relative ${className ?? ''}`}>
         <SlSelect
+          ref={selectRef}
           className={combinedClassName}
           hoist={hoist}
           value={templateValue}

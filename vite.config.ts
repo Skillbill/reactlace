@@ -24,13 +24,15 @@ export default defineConfig({
       fileName: 'reactlace'
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: (id) => id === 'react' || id === 'react-dom' || id.startsWith('react/') || id.startsWith('react-dom/'),
       output: {
         assetFileNames: (assetInfo) =>
           assetInfo.name?.endsWith('.css') ? 'styles/[name][extname]' : 'assets/[name][extname]',
         globals: {
           react: 'React',
-          'react-dom': 'ReactDOM'
+          'react-dom': 'ReactDOM',
+          'react/jsx-runtime': 'React',
+          'react/jsx-dev-runtime': 'React'
         }
       }
     },
