@@ -56,26 +56,40 @@ export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
       [withTime]
     )
 
+    const toDate = useCallback((v: Date | Date[] | string | null | undefined): Date | Date[] | null | undefined => {
+      if (!v) return v as null | undefined
+      if (typeof v === 'string') {
+        const d = new Date(v)
+        return isNaN(d.getTime()) ? null : d
+      }
+      return v
+    }, [])
+
+    const calendarValue = useMemo(() => toDate(value) ?? null, [value, toDate])
+
     const formattedValue = useMemo((): string | undefined => {
       if (!value) return undefined
 
-      if (Array.isArray(value)) {
+      const resolved = toDate(value)
+      if (!resolved) return undefined
+
+      if (Array.isArray(resolved)) {
         if (selectionMode === 'range') {
-          const [startDate, endDate] = value
+          const [startDate, endDate] = resolved
           const formattedStartDate = formatDate(startDate)
           const formattedEndDate = endDate ? formatDate(endDate) : ''
           return `${formattedStartDate} ~ ${formattedEndDate}`
         } else if (selectionMode === 'multiple') {
-          return value.map((date) => formatDate(date)).join(', ')
+          return resolved.map((date) => formatDate(date)).join(', ')
         }
       }
 
-      if (value instanceof Date) {
-        return formatDate(value)
+      if (resolved instanceof Date) {
+        return formatDate(resolved)
       }
 
       return ''
-    }, [value, selectionMode, formatDate])
+    }, [value, selectionMode, formatDate, toDate])
 
     const handleDateSelect = useCallback(
       (date: Date | Date[] | null) => {
@@ -141,7 +155,7 @@ export const RLDatePicker = forwardRef<RLDatePickerRef, RLDatePickerProps>(
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         </div>
         <Calendar
-          value={value}
+          value={calendarValue}
           onChange={(e) => handleDateSelect(e.value as Date | Date[] | null)}
           dateFormat="yy/mm/dd"
           inline
