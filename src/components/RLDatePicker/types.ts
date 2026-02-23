@@ -2,7 +2,7 @@ import type { RLInputRuleType } from '../utils/types'
 
 export interface RLDatePickerProps {
   className?: string
-  value?: Date | Date[] | null
+  value?: Date | Date[] | string | null
   onChange?: (value: Date | Date[] | null) => void
   name?: string
   label: string
