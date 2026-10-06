@@ -20,7 +20,6 @@ afterEach(() => {
   expect(consoleError).not.toHaveBeenCalled()
 })
 
-// The filters hold their model in a plain state: every render is asynchronous
 async function setup() {
   const onFiltersApplied = vi.fn()
   const view = render(<RLCrudFilters filters={filters} onFiltersApplied={onFiltersApplied} />)
@@ -65,11 +64,11 @@ test('RLCrudFilters keeps the text typed in the next field before the render of 
   expect(onFiltersApplied).toHaveBeenLastCalledWith({ name: 'fib', notes: 'some', from: 10, to: undefined })
 })
 
-test('RLCrudFilters reset empties a field committed in the same batch', async () => {
+test('RLCrudFilters reset empties a field committed right before it', async () => {
   const { field, button, shown, onFiltersApplied } = await setup()
 
   // Reset clicked with the cursor still in the field: the commit of the blur
-  // and the reset reach React together, the value of the field never changes
+  // and the reset come one after the other
   act(() => {
     typeText(field('name'), 'fib')
     commit(field('name'))
@@ -80,6 +79,28 @@ test('RLCrudFilters reset empties a field committed in the same batch', async ()
 
   expect(shown()).toEqual({ name: '', notes: 'any', from: '', to: '' })
   expect(onFiltersApplied).toHaveBeenLastCalledWith({ name: undefined, notes: 'any', from: undefined, to: undefined })
+})
+
+test.each([
+  ['a click on apply', (view: Awaited<ReturnType<typeof setup>>) => fireEvent.click(view.button('apply'))],
+  [
+    'Enter',
+    (view: Awaited<ReturnType<typeof setup>>) =>
+      fireEvent.keyUp(view.container.querySelector('sl-details')!, { key: 'Enter' })
+  ]
+])('RLCrudFilters applies a value committed right before %s', async (_, apply) => {
+  const view = await setup()
+
+  // The apply follows the commit with no render scheduled by React in between
+  act(() => {
+    typeText(view.field('name'), 'fib')
+    commit(view.field('name'))
+    typeText(view.field('to'), '20')
+    commit(view.field('to'))
+    apply(view)
+  })
+
+  expect(view.onFiltersApplied).toHaveBeenLastCalledWith({ name: 'fib', notes: 'any', from: undefined, to: 20 })
 })
 
 test('RLCrudFilters reset brings a changed default back', async () => {

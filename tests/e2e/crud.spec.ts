@@ -171,6 +171,34 @@ for (const condition of CONDITIONS) {
         .toEqual({ name: 'fib', description: 'desc', reg_from: 10, reg_to: 20 })
     })
 
+    test('filters: apply clicked right after the last key, without leaving the field', async ({ page }) => {
+      await open(page, condition)
+      await page.locator(`${FILTERS} [slot="summary"]`).click()
+      await expect(page.locator(`${FILTERS}[open]`)).toBeVisible()
+      await focusField(page, 'name', FILTERS)
+      await typeSequence(page, ['fib', 'desc', '10', '20'], condition, { tabAfterLast: false })
+      await page.locator(`${FILTERS} sl-button`, { hasText: 'button.apply' }).click()
+
+      await expect
+        .poll(async () => (await calls(page)).filters.at(-1))
+        .toEqual({ name: 'fib', description: 'desc', reg_from: 10, reg_to: 20 })
+      expect(await clobbers(page)).toEqual([])
+    })
+
+    test('filters: Enter in the last field applies what was typed', async ({ page }) => {
+      await open(page, condition)
+      await page.locator(`${FILTERS} [slot="summary"]`).click()
+      await expect(page.locator(`${FILTERS}[open]`)).toBeVisible()
+      await focusField(page, 'name', FILTERS)
+      await typeSequence(page, ['fib', 'desc', '10', '20'], condition, { tabAfterLast: false })
+      await page.keyboard.press('Enter')
+
+      await expect
+        .poll(async () => (await calls(page)).filters.at(-1))
+        .toEqual({ name: 'fib', description: 'desc', reg_from: 10, reg_to: 20 })
+      expect(await clobbers(page)).toEqual([])
+    })
+
     test('filters: reset empties the fields, including the one being typed', async ({ page }) => {
       await open(page, condition)
       await page.locator(`${FILTERS} [slot="summary"]`).click()

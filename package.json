@@ -24,7 +24,7 @@
   ],
   "type": "module",
   "types": "./dist/index.d.ts",
-  "main": "./dist/reactlace.umd.cjs",
+  "main": "./dist/reactlace.cjs",
   "module": "./dist/reactlace.js",
   "exports": {
     ".": {
@@ -32,7 +32,7 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/reactlace.js"
       },
-      "require": "./dist/reactlace.umd.cjs"
+      "require": "./dist/reactlace.cjs"
     },
     "./styles/reactlace.css": {
       "import": "./dist/styles/index.css",
