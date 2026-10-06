@@ -4,6 +4,7 @@
   - [Getting Started](#getting-started)
     - [Fork and Clone the Repository](#fork-and-clone-the-repository)
     - [Storybook](#storybook)
+    - [Tests](#tests)
   - [How to Contribute](#how-to-contribute)
     - [Suggesting Features](#suggesting-features)
     - [Reporting Bugs](#reporting-bugs)
@@ -34,6 +35,18 @@ npm run storybook
 ```
 
 This will start Storybook on your local machine.
+
+### Tests
+
+Component tests run on [Vitest](https://vitest.dev/) with jsdom, browser tests on [Playwright](https://playwright.dev/):
+
+```
+npm test
+npm run test:e2e
+```
+
+The browser tests drive the page in `tests/e2e/harness` with the Chrome installed on the machine.
+To use the Chromium of Playwright instead, run `npx playwright install chromium` once and then `PW_CHANNEL= npm run test:e2e`.
 
 ## How to Contribute
 

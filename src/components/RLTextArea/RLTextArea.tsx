@@ -4,6 +4,7 @@ import type SlTextareaElement from '@shoelace-style/shoelace/dist/components/tex
 import type { RLTextAreaProps, RLTextAreaRef } from './types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
+import { useElementValue } from '../../hooks/useElementValue'
 
 export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
   (
@@ -40,6 +41,7 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
     ref
   ) => {
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
+    const { elementRef, commitValue } = useElementValue<SlTextareaElement>(value ?? '')
 
     useEffect(() => {
       if (value !== undefined) {
@@ -56,11 +58,12 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
       (event: CustomEvent) => {
         const target = event.target as SlTextareaElement
         const newValue = target?.value ?? ''
+        commitValue(newValue)
         validate(newValue)
         onChange?.(newValue)
         onSlChange?.(event)
       },
-      [onChange, onSlChange, validate]
+      [commitValue, onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
@@ -96,8 +99,8 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
     return (
       <div className={`relative ${className ?? ''}`}>
         <SlTextarea
+          ref={elementRef}
           className={combinedClassName}
-          value={value ?? ''}
           name={name}
           defaultValue={defaultValue}
           size={size}

@@ -1,4 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import type { RLCrudFormProps, RLCrudFormRef, RLCrudFormFieldType } from './types'
 import type { RLCrudInputValueType, RLCrudInputRef } from '../RLCrudInput'
 import { RLCrudInput } from '../RLCrudInput'
@@ -97,11 +98,16 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
 
     const handleFieldChange = useCallback(
       (fieldKey: string, fieldValue: RLCrudInputValueType) => {
-        setModel((prev) => {
-          const newModel = { ...prev, [fieldKey]: fieldValue }
-          // Run side effect
-          fields[fieldKey]?.side_effect?.(newModel, fields)
-          return newModel
+        // Render before the event returns. Shoelace events are not batched by
+        // React as its own: the render would come in a later task, after the
+        // next key or the click on confirm, which would still see the old model.
+        flushSync(() => {
+          setModel((prev) => {
+            const newModel = { ...prev, [fieldKey]: fieldValue }
+            // Run side effect
+            fields[fieldKey]?.side_effect?.(newModel, fields)
+            return newModel
+          })
         })
       },
       [fields]

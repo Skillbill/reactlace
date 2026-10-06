@@ -4,6 +4,7 @@ import type SlInputElement from '@shoelace-style/shoelace/dist/components/input/
 import type { RLInputProps, RLInputRef } from './types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
+import { useElementValue } from '../../hooks/useElementValue'
 
 export const RLInput = forwardRef<RLInputRef, RLInputProps>(
   (
@@ -51,6 +52,7 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
     ref
   ) => {
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
+    const { elementRef, commitValue } = useElementValue<SlInputElement>(value ?? '')
 
     useEffect(() => {
       if (value !== undefined) {
@@ -67,11 +69,12 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
       (event: CustomEvent) => {
         const target = event.target as SlInputElement
         const newValue = target?.value ?? ''
+        commitValue(newValue)
         validate(newValue)
         onChange?.(newValue)
         onSlChange?.(event)
       },
-      [onChange, onSlChange, validate]
+      [commitValue, onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
@@ -116,8 +119,8 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
     return (
       <div className="relative">
         <SlInput
+          ref={elementRef}
           className={combinedClassName}
-          value={value ?? ''}
           type={type}
           name={name}
           defaultValue={defaultValue}
