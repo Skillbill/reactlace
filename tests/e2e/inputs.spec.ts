@@ -19,8 +19,8 @@ const open = (page: Page, condition: Condition, extra = '') =>
 
 const model = async (page: Page) => JSON.parse((await page.getByTestId('model').textContent()) ?? '{}')
 
-// Standalone inputs held by a plain useState: no flushSync in the way, every
-// render is asynchronous
+// Standalone inputs held by a plain useState: a commit renders the parent
+// before its event returns, every other render is asynchronous
 test.afterEach(({ page }) => {
   expect(pageErrors(page)).toEqual([])
 })
@@ -46,6 +46,23 @@ for (const condition of CONDITIONS) {
         area: 'two words'
       })
       expect(await clobbers(page)).toEqual([])
+    })
+
+    test('a click on save right after typing saves what was typed', async ({ page }) => {
+      await open(page, condition)
+      for (const [name, text] of [['text', 'hello'], ['number', '2001'], ['area', 'two words']]) {
+        await focusField(page, name)
+        await typeSequence(page, [text], condition, { tabAfterLast: false })
+        // No Tab: the click on save is what leaves the field and commits it
+        await page.getByTestId('save').click()
+        await settle(page, condition)
+      }
+
+      expect(await page.evaluate(() => window.__saved)).toEqual([
+        { text: 'hello', number: null, area: '' },
+        { text: 'hello', number: 2001, area: '' },
+        { text: 'hello', number: 2001, area: 'two words' }
+      ])
     })
 
     test('Enter commits and typing can go on in the same field', async ({ page }) => {

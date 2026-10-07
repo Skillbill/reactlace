@@ -145,6 +145,32 @@ describe.each(cases)('$name', ({ Field, first, second, typed, longer, changed })
     expect(onChange).toHaveBeenCalledWith(typed[1])
   })
 
+  test('a click right after a commit finds the parent with the committed value', async () => {
+    // A save button reading the state of its render, as AppSettingsView in efesto
+    const saved: ModelValue[] = []
+    function WithSave() {
+      const [value, setValue] = useState<ModelValue>(first[0])
+      return (
+        <>
+          <Field value={value} onChange={setValue} />
+          <button onClick={() => saved.push(value)}>Save</button>
+        </>
+      )
+    }
+    const { container } = render(<WithSave />)
+    const field = await textField(container)
+
+    // Leaving the field with the click on save: the commit, then the click,
+    // with no render scheduled by React in between
+    act(() => {
+      typeText(field, typed[0])
+      commit(field)
+      container.querySelector('button')!.click()
+    })
+
+    expect(saved).toEqual([typed[1]])
+  })
+
   test('reports the committed text once', async () => {
     const onChange = vi.fn()
     const onSlChange = vi.fn()

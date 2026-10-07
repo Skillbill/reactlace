@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import SlInput from '@shoelace-style/shoelace/dist/react/input/index.js'
 import type SlInputElement from '@shoelace-style/shoelace/dist/components/input/input.js'
 import type { RLNumberInputProps, RLNumberInputRef } from './types'
@@ -84,8 +85,13 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
         const newValue = target?.value ?? ''
         const validValue = checkMinMax(newValue)
         commitValue(validValue?.toString() ?? '')
-        validate(validValue)
-        onChange?.(validValue)
+        // Render the parent before the event returns: Shoelace events are not
+        // batched by React as its own, and a click on a button right after the
+        // commit would run with a parent that still holds the old value
+        flushSync(() => {
+          validate(validValue)
+          onChange?.(validValue)
+        })
         onSlChange?.(event)
       },
       [checkMinMax, commitValue, onChange, onSlChange, validate]

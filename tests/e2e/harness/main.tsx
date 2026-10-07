@@ -17,6 +17,7 @@ import 'primereact/resources/primereact.min.css'
 type Model = { [key: string]: RLCrudInputValueType }
 
 window.__confirmed = []
+window.__saved = []
 window.__calls = { add: [], edit: [], filters: [] }
 
 const params = new URLSearchParams(window.location.search)
@@ -247,6 +248,14 @@ function InputsScenario() {
               }}
             >
               reset
+            </button>
+            <button
+              type="button"
+              data-testid="save"
+              // Reads the state of its render, as a save button of an application
+              onClick={() => window.__saved.push({ text, number, area })}
+            >
+              save
             </button>
           </div>
           <pre data-testid="model">{JSON.stringify({ text, upper, rejected, number, clamped, area })}</pre>
