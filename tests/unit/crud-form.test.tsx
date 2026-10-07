@@ -307,6 +307,50 @@ describe.each([
     })
   })
 
+  test('the same item built again by the parent keeps what was typed', async () => {
+    const { field, rerender, form, submit, onConfirm } = await setup({ type: 'edit', value: { ...stored } })
+
+    act(() => {
+      typeText(field('reg_01'), '3000')
+      commit(field('reg_01'))
+    })
+    typeText(field('name'), 'typed')
+    // A parent passing value={toItem(page)}: a new object at each of its renders
+    rerender(form({ type: 'edit', value: { ...stored } }))
+
+    expect(field('reg_01').value).toBe('3000')
+    expect(field('name').value).toBe('typed')
+    act(() => commit(field('name')))
+    act(() => submit())
+    expect(onConfirm).toHaveBeenCalledWith({ ...stored, name: 'typed', reg_01: 3000 })
+  })
+
+  test('the same item is recognized also after the side effects changed the first one', async () => {
+    // The side effect of code writes code_upper into the value it is given
+    const item = () => ({ ...stored, code_upper: '' })
+    const { field, rerender, form } = await setup({ type: 'edit', value: item() })
+
+    act(() => {
+      typeText(field('reg_01'), '3000')
+      commit(field('reg_01'))
+    })
+    rerender(form({ type: 'edit', value: item() }))
+
+    expect(field('reg_01').value).toBe('3000')
+  })
+
+  test('new fields with the same item start the form again', async () => {
+    const { field, rerender, form } = await setup({ type: 'edit', value: stored })
+
+    act(() => {
+      typeText(field('reg_01'), '3000')
+      commit(field('reg_01'))
+    })
+    rerender(form({ type: 'edit', value: stored, fields: [...fields] }))
+
+    expect(field('reg_01').value).toBe('1000')
+  })
+
   test('validate() from outside reports the missing value', async () => {
     const ref = { current: null as { validate: () => boolean } | null }
     const { field, container } = await setup({ ref } as Partial<RLCrudFormProps>)
@@ -327,6 +371,80 @@ describe.each([
     })
     expect(valid).toBe(true)
   })
+})
+
+describe('RLCrudForm required fields', () => {
+  const requiredFields: RLCrudFormFieldType[] = [
+    { i18n_key: 'count', value: 'count', label: 'Count', input_type: 'number', required: true },
+    { i18n_key: 'accepted', value: 'accepted', label: 'Accepted', input_type: 'checkbox', required: true },
+    {
+      i18n_key: 'tags',
+      value: 'tags',
+      label: 'Tags',
+      input_type: 'select',
+      required: true,
+      multiple: true,
+      options: [{ value: 'a', text: 'A' }]
+    }
+  ]
+
+  function validateWith(value: RLCrudFormProps['value']) {
+    const ref = { current: null as { validate: () => boolean } | null }
+    const view = render(
+      <RLCrudForm
+        ref={ref}
+        type="edit"
+        value={value}
+        fields={requiredFields}
+        validateAll
+        title="Counter"
+        cancelLabel="Cancel"
+        confirmLabel="Confirm"
+        requiredRuleMessage="Required"
+        primaryKey="id"
+      />
+    )
+    let valid = false
+    act(() => {
+      valid = ref.current!.validate()
+    })
+    const errors = view.container.textContent!.split('Required').length - 1
+    view.unmount()
+    return { valid, errors }
+  }
+
+  test('0 is a value', () => {
+    expect(validateWith({ count: 0, accepted: true, tags: ['a'] })).toEqual({ valid: true, errors: 0 })
+  })
+
+  test('an unchecked checkbox and an empty list are missing', () => {
+    expect(validateWith({ count: 1, accepted: false, tags: [] })).toEqual({ valid: false, errors: 2 })
+  })
+
+  test('null and empty text are missing', () => {
+    expect(validateWith({ count: null, accepted: true, tags: ['a'] }).valid).toBe(false)
+    expect(validateWith({ count: '', accepted: true, tags: ['a'] }).valid).toBe(false)
+  })
+})
+
+test('RLCrudForm gives the step of a field to its number input', async () => {
+  const { container } = render(
+    <RLCrudForm
+      type="add"
+      fields={[
+        { i18n_key: 'ratio', value: 'ratio', label: 'Ratio', input_type: 'number', step: 'any' },
+        { i18n_key: 'count', value: 'count', label: 'Count', input_type: 'number' }
+      ]}
+      title="Steps"
+      cancelLabel="Cancel"
+      confirmLabel="Confirm"
+      requiredRuleMessage="Required"
+      primaryKey="id"
+    />
+  )
+  const step = async (name: string) => ((await textField(container, name)) as TextElement & { step: unknown }).step
+  expect(await step('ratio')).toBe('any')
+  expect(await step('count')).toBe(1)
 })
 
 test('RLCrudForm keeps a single field by name', async () => {

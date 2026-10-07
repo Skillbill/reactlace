@@ -81,6 +81,22 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
     const [lastSelectedItem, setLastSelectedItem] = useState<unknown>(null)
     const [fetchOnCloseStatus, setFetchOnCloseStatus] = useState(false)
     const skipWatchersRef = useRef(false)
+    // Only the latest request may fill the table: an earlier one answering
+    // late would show the page or the filters left behind
+    const lastFetchRef = useRef(0)
+    // Each opening mounts a new form, also when the previous one is still
+    // there because its dialog was closed a moment ago
+    const [dialogOpening, setDialogOpening] = useState(0)
+    const dialogResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+    const cancelDialogReset = useCallback(() => {
+      if (dialogResetTimerRef.current !== null) {
+        clearTimeout(dialogResetTimerRef.current)
+        dialogResetTimerRef.current = null
+      }
+    }, [])
+
+    useEffect(() => cancelDialogReset, [cancelDialogReset])
 
     const filtersRef = useRef<RLCrudFiltersRef>(null)
 
@@ -120,9 +136,13 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
     )
 
     const fetchData = useCallback(async () => {
+      const fetchId = ++lastFetchRef.current
       try {
         const response = await getItems(currentPage, rowsPerPage, { ...filtersApplied })
 
+        if (fetchId !== lastFetchRef.current) {
+          return
+        }
         if (!response) {
           onFetchError?.()
           return
@@ -133,7 +153,9 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e)
-        onFetchError?.()
+        if (fetchId === lastFetchRef.current) {
+          onFetchError?.()
+        }
       }
     }, [currentPage, rowsPerPage, filtersApplied, getItems, onFetchError])
 
@@ -159,21 +181,25 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
 
         setLastSelectedItem((data as Record<string, unknown>)?.[primary_key])
         if (action.component) {
+          cancelDialogReset()
+          setDialogOpening((n) => n + 1)
           setSelectedItem(structuredClone(data as Record<string, unknown>))
           setDialog(action.name)
           setDialogProps(action.dialogProperties ?? {})
           setShowDialog(true)
         }
       },
-      [primary_key, fetchData]
+      [primary_key, fetchData, cancelDialogReset]
     )
 
     const addItemHandler = useCallback(() => {
+      cancelDialogReset()
+      setDialogOpening((n) => n + 1)
       setSelectedItem({})
       setDialog('add')
       setDialogProps({})
       setShowDialog(true)
-    }, [])
+    }, [cancelDialogReset])
 
     const onFiltersApplied = useCallback((appliedFilters: Record<string, unknown>) => {
       setFiltersApplied(appliedFilters)
@@ -231,13 +257,15 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
         i18n_key: editTooltipI18nKey,
         icon_name: 'pencil',
         onClick: (data: unknown) => {
+          cancelDialogReset()
+          setDialogOpening((n) => n + 1)
           setSelectedItem(structuredClone(data as Record<string, unknown>))
           setDialog('edit')
           setDialogProps({})
           setShowDialog(true)
         }
       }),
-      [editTooltipI18nKey]
+      [editTooltipI18nKey, cancelDialogReset]
     )
 
     const onEdit = useCallback(
@@ -255,10 +283,12 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
         setFetchOnCloseStatus(false)
         fetchData()
       }
-      setTimeout(() => {
+      cancelDialogReset()
+      dialogResetTimerRef.current = setTimeout(() => {
+        dialogResetTimerRef.current = null
         setDialog(null)
       }, 300)
-    }, [fetchOnCloseStatus, fetchData])
+    }, [fetchOnCloseStatus, fetchData, cancelDialogReset])
 
     const renderActions = useCallback(
       (data: unknown) => (
@@ -344,7 +374,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
         >
           {dialog === 'add' && (
             <RLCrudForm
-              key="add"
+              key={`add-${dialogOpening}`}
               type="add"
               fields={formFields}
               title={translationFn(addTitleI18nKey ?? `message.add_${singular_label}`)}
@@ -361,7 +391,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
 
           {dialog === 'edit' && (
             <RLCrudForm
-              key="edit"
+              key={`edit-${dialogOpening}`}
               type="edit"
               fields={formFields}
               title={translationFn(editTitleI18nKey ?? `message.edit_${singular_label}`)}
@@ -384,7 +414,7 @@ export const RLCrud = forwardRef<RLCrudRef, RLCrudProps>(
               const ActionComponent = action.component!
               return (
                 <ActionComponent
-                  key={action.name}
+                  key={`${action.name}-${dialogOpening}`}
                   data={{
                     id,
                     item: selectedItem,

@@ -11,6 +11,14 @@ globalThis.ResizeObserver ??= class {
   disconnect() {}
 }
 
+// Used by Shoelace to run the animations of dialogs and popups, missing in jsdom
+window.matchMedia ??= (query: string) =>
+  ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList
+Element.prototype.getAnimations ??= () => []
+Element.prototype.animate ??= function () {
+  return { finished: Promise.resolve(), cancel() {}, addEventListener() {} } as unknown as Animation
+}
+
 afterEach(() => {
   cleanup()
 })

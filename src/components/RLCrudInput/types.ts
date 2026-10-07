@@ -34,7 +34,8 @@ export interface RLCrudInputProps {
   multiple?: boolean
   forceSelection?: boolean
   withTime?: boolean
-  onError?: (error: RLFileInputErrorEvent) => void
+  step?: number | 'any'
+  onError?:(error: RLFileInputErrorEvent) => void
 }
 
 export interface RLCrudInputRef {

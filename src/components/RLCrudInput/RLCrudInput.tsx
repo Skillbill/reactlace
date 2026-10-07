@@ -41,6 +41,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
       multiple = false,
       forceSelection = true,
       withTime = false,
+      step,
       onError
     },
     ref
@@ -98,6 +99,7 @@ export const RLCrudInput = forwardRef<RLCrudInputRef, RLCrudInputProps>(
             rules={rules}
             disabled={disabled}
             required={required}
+            step={step}
           />
         )
 
