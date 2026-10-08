@@ -1,9 +1,11 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import SlInput from '@shoelace-style/shoelace/dist/react/input/index.js'
 import type SlInputElement from '@shoelace-style/shoelace/dist/components/input/input.js'
 import type { RLNumberInputProps, RLNumberInputRef } from './types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
+import { useElementValue } from '../../hooks/useElementValue'
 
 export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
   (
@@ -44,6 +46,7 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
     ref
   ) => {
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
+    const { elementRef, commitValue } = useElementValue<SlInputElement>(value?.toString() ?? '')
 
     useEffect(() => {
       if (value !== undefined) {
@@ -81,11 +84,17 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
         const target = event.target as SlInputElement
         const newValue = target?.value ?? ''
         const validValue = checkMinMax(newValue)
-        validate(validValue)
-        onChange?.(validValue)
+        commitValue(validValue?.toString() ?? '')
+        // Render the parent before the event returns: Shoelace events are not
+        // batched by React as its own, and a click on a button right after the
+        // commit would run with a parent that still holds the old value
+        flushSync(() => {
+          validate(validValue)
+          onChange?.(validValue)
+        })
         onSlChange?.(event)
       },
-      [checkMinMax, onChange, onSlChange, validate]
+      [checkMinMax, commitValue, onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
@@ -127,9 +136,9 @@ export const RLNumberInput = forwardRef<RLNumberInputRef, RLNumberInputProps>(
     return (
       <div className={`relative ${className ?? ''}`}>
         <SlInput
+          ref={elementRef}
           className={errorMessage ? 'error' : undefined}
           type="number"
-          value={value?.toString() ?? ''}
           name={name}
           defaultValue={defaultValue}
           size={size}

@@ -1,4 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import type { RLCrudFiltersProps, RLCrudFiltersRef } from './types'
 import type { RLCrudInputValueType } from '../RLCrudInput'
 import { RLCrudInput } from '../RLCrudInput'
@@ -97,7 +98,11 @@ export const RLCrudFilters = forwardRef<RLCrudFiltersRef, RLCrudFiltersProps>(
 
     const handleFieldChange = useCallback(
       (fieldKey: string, value: RLCrudInputValueType) => {
-        setModel((prev) => ({ ...prev, [fieldKey]: value }))
+        // Render before the event returns, as RLCrudForm does: apply and Enter
+        // can follow the commit of a field before React gets to render it
+        flushSync(() => {
+          setModel((prev) => ({ ...prev, [fieldKey]: value }))
+        })
       },
       []
     )

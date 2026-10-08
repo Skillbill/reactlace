@@ -1,9 +1,40 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import type { RLCrudFormProps, RLCrudFormRef, RLCrudFormFieldType } from './types'
 import type { RLCrudInputValueType, RLCrudInputRef } from '../RLCrudInput'
 import { RLCrudInput } from '../RLCrudInput'
 import { RLButton } from '../RLButton'
 import type { RLInputRuleType } from '../utils/types'
+
+const isPlainObject = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && Object.getPrototypeOf(v) === Object.prototype
+
+// Copy of the containers only (arrays, plain objects, dates), enough to
+// compare later against a value the side effects may have mutated meanwhile
+const snapshot = (v: unknown): unknown => {
+  if (v instanceof Date) return new Date(v.getTime())
+  if (Array.isArray(v)) return v.map(snapshot)
+  if (isPlainObject(v)) {
+    return Object.fromEntries(Object.entries(v).map(([k, item]) => [k, snapshot(item)]))
+  }
+  return v
+}
+
+const sameContent = (a: unknown, b: unknown): boolean => {
+  if (Object.is(a, b)) return true
+  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime()
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((item, i) => sameContent(item, b[i]))
+  }
+  if (isPlainObject(a) && isPlainObject(b)) {
+    const keys = Object.keys(a)
+    return (
+      keys.length === Object.keys(b).length &&
+      keys.every((key) => Object.prototype.hasOwnProperty.call(b, key) && sameContent(a[key], b[key]))
+    )
+  }
+  return false
+}
 
 export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
   (
@@ -28,9 +59,25 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
     const [model, setModel] = useState<{ [key: string]: RLCrudInputValueType }>({})
     const [fields, setFields] = useState<{ [key: string]: RLCrudFormFieldType }>({})
     const fieldRefs = useRef<Map<string, RLCrudInputRef>>(new Map())
+    const lastInitRef = useRef<{ fields: RLCrudFormFieldType[]; value: unknown; content: unknown } | null>(null)
 
     // Initialize fields from props
     useEffect(() => {
+      // A parent building `value` on each render would otherwise wipe what was
+      // typed at each of its renders: same fields and same content, nothing to do.
+      // The same object is the StrictMode run again, after the side effects
+      // below may have mutated it.
+      const lastInit = lastInitRef.current
+      if (
+        lastInit &&
+        lastInit.fields === initialFields &&
+        (lastInit.value === value || sameContent(lastInit.content, value))
+      ) {
+        return
+      }
+      // Taken before the side effects below, which may mutate `value`
+      lastInitRef.current = { fields: initialFields, value, content: snapshot(value) }
+
       const fieldsMap = initialFields.reduce(
         (acc, field) => ({
           ...acc,
@@ -63,7 +110,8 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
 
     const requiredRule: RLInputRuleType = useMemo(
       () => ({
-        validateFn: (v: unknown) => !!v,
+        // 0 is a value; false stays missing, a required checkbox must be checked
+        validateFn: (v: unknown) => v === 0 || (Array.isArray(v) ? v.length > 0 : !!v),
         message: requiredRuleMessage
       }),
       [requiredRuleMessage]
@@ -97,11 +145,16 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
 
     const handleFieldChange = useCallback(
       (fieldKey: string, fieldValue: RLCrudInputValueType) => {
-        setModel((prev) => {
-          const newModel = { ...prev, [fieldKey]: fieldValue }
-          // Run side effect
-          fields[fieldKey]?.side_effect?.(newModel, fields)
-          return newModel
+        // Render before the event returns. Shoelace events are not batched by
+        // React as its own: the render would come in a later task, after the
+        // next key or the click on confirm, which would still see the old model.
+        flushSync(() => {
+          setModel((prev) => {
+            const newModel = { ...prev, [fieldKey]: fieldValue }
+            // Run side effect
+            fields[fieldKey]?.side_effect?.(newModel, fields)
+            return newModel
+          })
         })
       },
       [fields]
@@ -189,6 +242,7 @@ export const RLCrudForm = forwardRef<RLCrudFormRef, RLCrudFormProps>(
                 imgStyle={field.img_style}
                 forceSelection={field.forceSelection}
                 withTime={field.withTime}
+                step={field.step}
                 value={model[field.value]}
                 onChange={(v) => handleFieldChange(field.value, v)}
                 onError={onError}

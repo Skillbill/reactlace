@@ -23,6 +23,7 @@ export interface RLCrudFormFieldType {
   multiple?: boolean
   forceSelection?: boolean
   withTime?: boolean
+  step?: number | 'any'
   side_effect?: (
     model: { [key: string]: RLCrudInputValueType },
     fields: {

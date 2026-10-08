@@ -1,9 +1,11 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import SlInput from '@shoelace-style/shoelace/dist/react/input/index.js'
 import type SlInputElement from '@shoelace-style/shoelace/dist/components/input/input.js'
 import type { RLInputProps, RLInputRef } from './types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
+import { useElementValue } from '../../hooks/useElementValue'
 
 export const RLInput = forwardRef<RLInputRef, RLInputProps>(
   (
@@ -51,6 +53,7 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
     ref
   ) => {
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
+    const { elementRef, commitValue } = useElementValue<SlInputElement>(value ?? '')
 
     useEffect(() => {
       if (value !== undefined) {
@@ -67,11 +70,17 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
       (event: CustomEvent) => {
         const target = event.target as SlInputElement
         const newValue = target?.value ?? ''
-        validate(newValue)
-        onChange?.(newValue)
+        commitValue(newValue)
+        // Render the parent before the event returns: Shoelace events are not
+        // batched by React as its own, and a click on a button right after the
+        // commit would run with a parent that still holds the old value
+        flushSync(() => {
+          validate(newValue)
+          onChange?.(newValue)
+        })
         onSlChange?.(event)
       },
-      [onChange, onSlChange, validate]
+      [commitValue, onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
@@ -116,8 +125,8 @@ export const RLInput = forwardRef<RLInputRef, RLInputProps>(
     return (
       <div className="relative">
         <SlInput
+          ref={elementRef}
           className={combinedClassName}
-          value={value ?? ''}
           type={type}
           name={name}
           defaultValue={defaultValue}

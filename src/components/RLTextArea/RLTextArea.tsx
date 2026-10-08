@@ -1,9 +1,11 @@
 import { forwardRef, useImperativeHandle, useCallback, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import SlTextarea from '@shoelace-style/shoelace/dist/react/textarea/index.js'
 import type SlTextareaElement from '@shoelace-style/shoelace/dist/components/textarea/textarea.js'
 import type { RLTextAreaProps, RLTextAreaRef } from './types'
 import { ErrorMessage } from '../utils/ErrorMessage'
 import { useValidation } from '../../hooks/useValidation'
+import { useElementValue } from '../../hooks/useElementValue'
 
 export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
   (
@@ -40,6 +42,7 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
     ref
   ) => {
     const { errorMessage, isValid, validate } = useValidation({ rules, externalError: error })
+    const { elementRef, commitValue } = useElementValue<SlTextareaElement>(value ?? '')
 
     useEffect(() => {
       if (value !== undefined) {
@@ -56,11 +59,17 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
       (event: CustomEvent) => {
         const target = event.target as SlTextareaElement
         const newValue = target?.value ?? ''
-        validate(newValue)
-        onChange?.(newValue)
+        commitValue(newValue)
+        // Render the parent before the event returns: Shoelace events are not
+        // batched by React as its own, and a click on a button right after the
+        // commit would run with a parent that still holds the old value
+        flushSync(() => {
+          validate(newValue)
+          onChange?.(newValue)
+        })
         onSlChange?.(event)
       },
-      [onChange, onSlChange, validate]
+      [commitValue, onChange, onSlChange, validate]
     )
 
     const handleBlur = useCallback(
@@ -96,8 +105,8 @@ export const RLTextArea = forwardRef<RLTextAreaRef, RLTextAreaProps>(
     return (
       <div className={`relative ${className ?? ''}`}>
         <SlTextarea
+          ref={elementRef}
           className={combinedClassName}
-          value={value ?? ''}
           name={name}
           defaultValue={defaultValue}
           size={size}
